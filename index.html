@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>No Limits — Gestão</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login" class="login oculto">
+  <form class="cartao-login" id="formLogin">
+    <div class="marca">
+      <strong>NO LIMITS</strong>
+      <span>Marketing Estratégico</span>
+    </div>
+    <p class="nota">Os contratos guardam dados pessoais dos clientes. Entre com seu acesso para continuar.</p>
+    <div class="campo">
+      <label for="loginEmail">E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username" required>
+    </div>
+    <div class="campo">
+      <label for="loginSenha">Senha</label>
+      <input type="password" id="loginSenha" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="primario" id="btnEntrar">Entrar</button>
+    <p id="loginAviso" class="aviso"></p>
+  </form>
+</div>
+
+<header class="topo">
+  <div class="marca">
+    <strong>NO LIMITS</strong>
+    <span>Marketing Estratégico</span>
+  </div>
+  <nav class="abas">
+    <button class="aba ativa" data-aba="contrato">Novo contrato</button>
+    <button class="aba" data-aba="clientes">Clientes</button>
+    <button class="aba" data-aba="historico">Histórico</button>
+  </nav>
+  <span id="statusConexao" class="conexao"></span>
+  <button id="btnSair" class="sair oculto">Sair</button>
+</header>
+
+<main>
+
+<!-- ============ NOVO CONTRATO ============ -->
+<section id="painel-contrato" class="painel ativo">
+
+  <div class="colunas">
+    <div class="coluna">
+
+      <fieldset>
+        <legend>Dados do contratante</legend>
+
+        <div class="campo">
+          <label for="clienteExistente">Carregar cliente já cadastrado</label>
+          <select id="clienteExistente">
+            <option value="">Novo cliente</option>
+          </select>
+        </div>
+
+        <div class="linha">
+          <div class="campo">
+            <label for="tipoPessoa">Tipo</label>
+            <select id="tipoPessoa">
+              <option value="PF">Pessoa física</option>
+              <option value="PJ">Pessoa jurídica</option>
+            </select>
+          </div>
+          <div class="campo so-pf">
+            <label for="sexo">Tratamento</label>
+            <select id="sexo">
+              <option value="F">Feminino</option>
+              <option value="M">Masculino</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="nome"><span class="rotulo-pf">Nome completo</span><span class="rotulo-pj">Razão social</span></label>
+          <input type="text" id="nome" placeholder="Ex.: Larissa Camila dos Santos Gomes">
+        </div>
+
+        <div class="linha">
+          <div class="campo">
+            <label for="documento"><span class="rotulo-pf">CPF</span><span class="rotulo-pj">CNPJ</span></label>
+            <input type="text" id="documento" placeholder="000.000.000-00">
+          </div>
+          <div class="campo so-pf">
+            <label for="rg">RG <span class="opcional">opcional</span></label>
+            <input type="text" id="rg" placeholder="00.000.000-0">
+          </div>
+          <div class="campo so-pj">
+            <label for="responsavelLegal">Representante legal</label>
+            <input type="text" id="responsavelLegal" placeholder="Nome de quem assina">
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="endereco">Endereço</label>
+          <input type="text" id="endereco" placeholder="R. Antônio Carlos, 95 - Centro">
+        </div>
+
+        <div class="linha">
+          <div class="campo grande">
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" placeholder="Valinhos">
+          </div>
+          <div class="campo pequeno">
+            <label for="uf">UF</label>
+            <input type="text" id="uf" maxlength="2" placeholder="SP">
+          </div>
+          <div class="campo">
+            <label for="cep">CEP</label>
+            <input type="text" id="cep" placeholder="13270-005">
+          </div>
+        </div>
+
+        <div class="linha">
+          <div class="campo">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" placeholder="cliente@email.com">
+          </div>
+          <div class="campo">
+            <label for="telefone">Telefone</label>
+            <input type="text" id="telefone" placeholder="(19) 99970-1050">
+          </div>
+        </div>
+      </fieldset>
+
+    </div>
+
+    <div class="coluna">
+
+      <fieldset>
+        <legend>Contrato</legend>
+
+        <div class="campo">
+          <label for="modelo">Modelo</label>
+          <select id="modelo">
+            <option value="seo">SEO Local e GEO</option>
+            <option value="hospedagem">Hospedagem de site + blog</option>
+          </select>
+        </div>
+
+        <div class="campo so-seo">
+          <label for="planoBase">Plano base</label>
+          <select id="planoBase">
+            <option value="3">3 meses de fidelidade</option>
+            <option value="6">6 meses de fidelidade</option>
+            <option value="12" selected>12 meses de fidelidade</option>
+            <option value="mensal">Mensal, sem fidelidade</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="valorBase"><span class="rotulo-seo">Mensalidade SEO/GEO</span><span class="rotulo-hosp">Mensalidade hospedagem + blog</span></label>
+          <div class="moeda">
+            <span>R$</span>
+            <input type="number" id="valorBase" step="10" min="0">
+          </div>
+        </div>
+
+        <div class="so-seo">
+          <div class="addon">
+            <label class="check">
+              <input type="checkbox" id="addonTrafego">
+              <span>Gestão de tráfego pago (Meta Ads)</span>
+            </label>
+            <div class="moeda">
+              <span>R$</span>
+              <input type="number" id="valorTrafego" step="10" min="0" value="600" disabled>
+            </div>
+          </div>
+
+          <div class="addon">
+            <label class="check">
+              <input type="checkbox" id="addonRedes">
+              <span>Gestão de redes sociais</span>
+            </label>
+            <div class="moeda">
+              <span>R$</span>
+              <input type="number" id="valorRedes" step="10" min="0" value="890" disabled>
+            </div>
+          </div>
+
+          <p class="nota">Os serviços adicionais são contratados sem fidelidade e podem ser encerrados isoladamente.</p>
+        </div>
+
+        <div class="linha">
+          <div class="campo">
+            <label for="diaVencimento">Dia do vencimento</label>
+            <input type="number" id="diaVencimento" min="1" max="28" value="10">
+          </div>
+          <div class="campo">
+            <label for="primeiroPagamento">Primeiro pagamento</label>
+            <input type="date" id="primeiroPagamento">
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="dataAssinatura">Data da assinatura</label>
+          <input type="date" id="dataAssinatura">
+        </div>
+
+        <div class="total">
+          <span>Total mensal</span>
+          <strong id="totalMensal">R$ 590,00</strong>
+        </div>
+        <p class="total-extenso" id="totalExtenso"></p>
+      </fieldset>
+
+      <div class="acoes">
+        <button id="btnVisualizar" class="secundario">Visualizar</button>
+        <button id="btnBaixar" class="primario">Baixar PDF para o Autentique</button>
+      </div>
+      <p id="aviso" class="aviso"></p>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ CLIENTES ============ -->
+<section id="painel-clientes" class="painel">
+  <div class="cabecalho-lista">
+    <h2>Clientes cadastrados</h2>
+    <input type="search" id="buscaCliente" placeholder="Buscar por nome ou documento">
+  </div>
+  <div id="listaClientes" class="lista"></div>
+</section>
+
+<!-- ============ HISTÓRICO ============ -->
+<section id="painel-historico" class="painel">
+  <div class="cabecalho-lista">
+    <h2>Contratos gerados</h2>
+    <input type="search" id="buscaContrato" placeholder="Buscar por cliente">
+  </div>
+  <div id="listaContratos" class="lista"></div>
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/pdfmake.min.js"></script>
+<script src="vfs-helvetica.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="contrato-texto.js"></script>
+<script src="contrato-pdf.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
