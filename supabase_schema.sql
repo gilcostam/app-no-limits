@@ -120,12 +120,17 @@ create table if not exists gmn_onboarding (
   etapa_briefing text not null default 'pendente',
   etapa_whatsapp text not null default 'pendente',
   etapa_drive text not null default 'pendente',
+  etapa_capa text not null default 'pendente',
   etapa_produtos text not null default 'pendente',
   link_drive text default '',
   observacoes text default '',
   concluido_em timestamptz,
   criado_em timestamptz default now()
 );
+
+-- A tabela acima é "if not exists", então a etapa de foto de capa, que entrou
+-- depois, não seria criada em quem já tinha a tabela. Daí este alter separado.
+alter table gmn_onboarding add column if not exists etapa_capa text not null default 'pendente';
 
 create index if not exists gmn_onboarding_responsavel_idx on gmn_onboarding (responsavel_id);
 create index if not exists gmn_onboarding_criado_idx on gmn_onboarding (criado_em desc);

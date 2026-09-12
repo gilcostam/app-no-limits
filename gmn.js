@@ -7,6 +7,7 @@ const ETAPAS = [
   { campo: 'etapa_briefing', rotulo: 'Briefing' },
   { campo: 'etapa_whatsapp', rotulo: 'Grupo no WhatsApp' },
   { campo: 'etapa_drive', rotulo: 'Pasta no Drive' },
+  { campo: 'etapa_capa', rotulo: 'Foto de capa' },
   { campo: 'etapa_produtos', rotulo: 'Produtos e serviços' },
 ];
 
