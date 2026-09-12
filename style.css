@@ -62,12 +62,6 @@ main { padding: 24px; max-width: 1200px; margin: 0 auto; }
 
 .colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
 
-@media (max-width: 900px) {
-  .colunas { grid-template-columns: 1fr; }
-  .topo { flex-wrap: wrap; height: auto; padding: 12px 16px; gap: 12px; }
-  main { padding: 16px; }
-}
-
 fieldset {
   background: var(--branco);
   border: 1px solid var(--cinza-claro);
@@ -205,6 +199,50 @@ button.secundario:hover { border-color: var(--cinza); }
 
 .vazio { color: var(--cinza); font-size: 14px; padding: 24px; text-align: center; }
 
+/* ---------- google meu negócio ---------- */
+
+.cabecalho-lista .filtro { max-width: 190px; flex: 0 0 auto; }
+.campo.pequeno-data { flex: 0 0 150px; }
+
+.cartao-onboarding {
+  background: var(--branco);
+  border: 1px solid var(--cinza-claro);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.topo-cartao { display: flex; align-items: center; gap: 16px; }
+.topo-cartao .info { flex: 1; min-width: 0; }
+.topo-cartao .info strong { display: block; font-size: 14px; margin-bottom: 3px; }
+.topo-cartao .info span { font-size: 12px; color: var(--cinza); }
+
+.etapas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+.etapa {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 11px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 1px solid var(--cinza-claro);
+  background: var(--branco);
+  color: var(--cinza);
+}
+.etapa:hover { border-color: var(--cinza); }
+.etapa.andamento { background: #FDF3E0; border-color: #E8C88A; color: #8A5D00; }
+.etapa.concluido { background: #E8F5EC; border-color: #9CCFAE; color: #1B7F3B; }
+.etapa.na { opacity: .55; text-decoration: line-through; }
+
+.extras { margin-top: 12px; border-top: 1px solid var(--cinza-claro); padding-top: 10px; }
+.extras summary { font-size: 12px; color: var(--cinza); cursor: pointer; }
+.extras .campo { margin-top: 10px; margin-bottom: 0; }
+
+/* na equipe cada linha é um formulário, então os campos não empilham */
+.equipe { margin-top: 22px; }
+.equipe .item-lista { padding: 10px 14px; }
+.equipe .campo { margin-bottom: 0; }
+.equipe .check { flex: 0 0 auto; }
+
 /* ---------- login ---------- */
 
 .login {
@@ -249,3 +287,21 @@ body:not(.liberado) main { display: none; }
 /* ---------- visibilidade condicional ---------- */
 
 .oculto { display: none !important; }
+
+/* ---------- telas estreitas ---------- */
+/* fica no fim do arquivo de propósito: são ajustes que precisam vencer as regras
+   de coluna, campo e lista definidas acima */
+
+@media (max-width: 900px) {
+  .colunas { grid-template-columns: 1fr; }
+  .topo { flex-wrap: wrap; height: auto; padding: 12px 16px; gap: 12px; }
+  main { padding: 16px; }
+
+  /* sem isto os campos lado a lado se espremem em vez de descer uma linha */
+  .linha { flex-wrap: wrap; }
+  .campo, .campo.grande, .campo.pequeno-data { flex: 1 1 170px; }
+
+  .cabecalho-lista { flex-wrap: wrap; }
+  .cabecalho-lista h2 { flex: 1 1 100%; }
+  .cabecalho-lista input, .cabecalho-lista .filtro { max-width: none; flex: 1 1 150px; }
+}

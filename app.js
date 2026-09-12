@@ -42,6 +42,9 @@ const Store = {
 
 let clientes = [];
 let contratos = [];
+let perfil = null;
+
+const ehAdmin = () => perfil?.papel === 'admin';
 
 /* ---------- abas ---------- */
 
@@ -53,6 +56,16 @@ document.querySelectorAll('.aba').forEach(botao => {
     $(`painel-${botao.dataset.aba}`).classList.add('ativo');
   });
 });
+
+/* ---------- permissões ---------- */
+
+// Esconder as abas é conveniência, não segurança: quem não é admin também é
+// barrado pelas políticas do banco, que é onde estão o CPF e o RG.
+function aplicarPermissoes() {
+  document.querySelectorAll('.so-admin').forEach(e => e.classList.toggle('oculto', !ehAdmin()));
+  const ativa = document.querySelector('.aba.ativa');
+  if (!ativa || ativa.classList.contains('oculto')) document.querySelector('.aba:not(.oculto)')?.click();
+}
 
 /* ---------- visibilidade condicional ---------- */
 
@@ -224,11 +237,16 @@ async function registrar(d) {
 /* ---------- carregamento e listas ---------- */
 
 async function carregarDados() {
-  clientes = await Store.listar('clientes');
-  contratos = await Store.listar('contratos');
-  preencherSelectClientes();
-  renderClientes();
-  renderContratos();
+  // Para quem não é admin estas duas consultas voltariam vazias de qualquer jeito,
+  // porque as políticas do banco restringem as tabelas com dado pessoal.
+  if (ehAdmin()) {
+    clientes = await Store.listar('clientes');
+    contratos = await Store.listar('contratos');
+    preencherSelectClientes();
+    renderClientes();
+    renderContratos();
+  }
+  await carregarGmn();
 }
 
 function preencherSelectClientes() {
@@ -325,12 +343,48 @@ $('btnBaixar').addEventListener('click', () => gerar('baixar'));
 
 /* ---------- acesso ---------- */
 
-function liberarApp(email) {
+// Sem Supabase o app guarda tudo no próprio navegador, onde não existe equipe:
+// quem abriu é dono dos dados e enxerga o app inteiro.
+const PERFIL_LOCAL = { nome: 'Local', papel: 'admin', ativo: true };
+
+async function buscarPerfil(id) {
+  const { data, error } = await sb.from('usuarios').select('id, nome, papel, ativo').eq('id', id).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+function recusarAcesso(texto) {
+  const aviso = $('loginAviso');
+  aviso.className = 'aviso erro';
+  aviso.textContent = texto;
+  $('login').classList.remove('oculto');
+  document.body.classList.remove('liberado');
+}
+
+async function liberarApp(usuario) {
+  if (usuario) {
+    const cadastro = await buscarPerfil(usuario.id);
+    // Sessão válida sem linha na equipe: deslogar evita ficar num limbo em que o
+    // app recarrega, acha a sessão e trava de novo na mesma tela.
+    if (!cadastro || !cadastro.ativo) {
+      await sb.auth.signOut();
+      return recusarAcesso(cadastro
+        ? 'Seu acesso foi desativado. Fale com o administrador.'
+        : 'Seu acesso ainda não foi liberado. Peça ao administrador para cadastrar você na equipe.');
+    }
+    perfil = cadastro;
+  } else {
+    perfil = PERFIL_LOCAL;
+  }
+
   $('login').classList.add('oculto');
-  $('btnSair').classList.toggle('oculto', !email);
-  $('statusConexao').textContent = email ? `Conectado como ${email}` : 'Dados salvos neste navegador';
+  $('btnSair').classList.toggle('oculto', !usuario);
+  $('statusConexao').textContent = usuario
+    ? `${perfil.nome} · ${ehAdmin() ? 'admin' : 'funcionário'}`
+    : 'Dados salvos neste navegador';
   document.body.classList.add('liberado');
-  carregarDados().catch(e => avisar(`Falha ao carregar dados: ${e.message}`, 'erro'));
+  aplicarPermissoes();
+  await carregarDados();
 }
 
 function mensagemLogin(erro) {
@@ -357,7 +411,12 @@ $('formLogin').addEventListener('submit', async e => {
   }
   aviso.textContent = '';
   $('loginSenha').value = '';
-  liberarApp(data.session.user.email);
+  try {
+    await liberarApp(data.session.user);
+  } catch (erro) {
+    aviso.className = 'aviso erro';
+    aviso.textContent = `Não foi possível carregar seus dados: ${erro.message}`;
+  }
 });
 
 $('btnSair').addEventListener('click', async () => {
@@ -375,10 +434,16 @@ $('btnSair').addEventListener('click', async () => {
   $('valorRedes').value = ADDONS.redes.valor;
   alternarVisibilidade();
   aplicarValorPadrao();
+  iniciarGmn();
 
   if (!sb) return liberarApp(null);
 
   const { data } = await sb.auth.getSession();
-  if (data.session) liberarApp(data.session.user.email);
-  else $('login').classList.remove('oculto');
+  if (!data.session) return $('login').classList.remove('oculto');
+
+  try {
+    await liberarApp(data.session.user);
+  } catch (erro) {
+    recusarAcesso(`Não foi possível carregar seus dados: ${erro.message}`);
+  }
 })();

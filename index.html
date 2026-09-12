@@ -34,9 +34,10 @@
     <span>Marketing Estratégico</span>
   </div>
   <nav class="abas">
-    <button class="aba ativa" data-aba="contrato">Novo contrato</button>
-    <button class="aba" data-aba="clientes">Clientes</button>
-    <button class="aba" data-aba="historico">Histórico</button>
+    <button class="aba ativa so-admin" data-aba="contrato">Novo contrato</button>
+    <button class="aba so-admin" data-aba="clientes">Clientes</button>
+    <button class="aba so-admin" data-aba="historico">Histórico</button>
+    <button class="aba" data-aba="gmn">Google Meu Negócio</button>
   </nav>
   <span id="statusConexao" class="conexao"></span>
   <button id="btnSair" class="sair oculto">Sair</button>
@@ -45,7 +46,7 @@
 <main>
 
 <!-- ============ NOVO CONTRATO ============ -->
-<section id="painel-contrato" class="painel ativo">
+<section id="painel-contrato" class="painel ativo so-admin">
 
   <div class="colunas">
     <div class="coluna">
@@ -223,7 +224,7 @@
 </section>
 
 <!-- ============ CLIENTES ============ -->
-<section id="painel-clientes" class="painel">
+<section id="painel-clientes" class="painel so-admin">
   <div class="cabecalho-lista">
     <h2>Clientes cadastrados</h2>
     <input type="search" id="buscaCliente" placeholder="Buscar por nome ou documento">
@@ -232,12 +233,62 @@
 </section>
 
 <!-- ============ HISTÓRICO ============ -->
-<section id="painel-historico" class="painel">
+<section id="painel-historico" class="painel so-admin">
   <div class="cabecalho-lista">
     <h2>Contratos gerados</h2>
     <input type="search" id="buscaContrato" placeholder="Buscar por cliente">
   </div>
   <div id="listaContratos" class="lista"></div>
+</section>
+
+<!-- ============ GOOGLE MEU NEGÓCIO ============ -->
+<section id="painel-gmn" class="painel">
+
+  <fieldset>
+    <legend>Colocar cliente em onboarding</legend>
+    <div class="linha">
+      <div class="campo grande">
+        <label for="gmnCliente">Cliente</label>
+        <input type="text" id="gmnCliente" list="gmnClientes" placeholder="Nome do cliente" autocomplete="off">
+        <datalist id="gmnClientes"></datalist>
+      </div>
+      <div class="campo">
+        <label for="gmnResponsavel">Responsável</label>
+        <select id="gmnResponsavel"></select>
+      </div>
+      <div class="campo pequeno-data">
+        <label for="gmnDataInicio">Início</label>
+        <input type="date" id="gmnDataInicio">
+      </div>
+    </div>
+    <div class="acoes">
+      <button id="btnNovoOnboarding" class="primario">Adicionar ao onboarding</button>
+    </div>
+    <p id="gmnAviso" class="aviso"></p>
+  </fieldset>
+
+  <div class="cabecalho-lista">
+    <h2>Onboarding em andamento</h2>
+    <input type="search" id="buscaOnboarding" placeholder="Buscar por cliente">
+    <select id="filtroResponsavel" class="filtro">
+      <option value="">Todos os responsáveis</option>
+    </select>
+    <select id="filtroSituacao" class="filtro">
+      <option value="abertos">Em aberto</option>
+      <option value="concluidos">Concluídos</option>
+      <option value="">Todos</option>
+    </select>
+  </div>
+
+  <div id="listaOnboarding" class="lista"></div>
+
+  <fieldset class="so-admin equipe">
+    <legend>Equipe</legend>
+    <p class="nota">Quem entra pela primeira vez é criado como funcionário, com o começo do e-mail como nome. Ajuste aqui o nome e o nível de acesso. Funcionário enxerga só esta aba.</p>
+    <div id="listaEquipe" class="lista"></div>
+    <p id="equipeAviso" class="aviso"></p>
+  </fieldset>
+
 </section>
 
 </main>
@@ -247,6 +298,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="contrato-texto.js"></script>
 <script src="contrato-pdf.js"></script>
+<script src="gmn.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
