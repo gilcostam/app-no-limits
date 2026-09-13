@@ -37,6 +37,7 @@
     <button class="aba ativa" data-aba="plano">Plano da semana</button>
     <button class="aba so-admin" data-aba="contrato">Novo contrato</button>
     <button class="aba so-admin" data-aba="clientes">Clientes</button>
+    <button class="aba so-admin" data-aba="importar">Importar</button>
     <button class="aba so-admin" data-aba="historico">Histórico</button>
     <button class="aba" data-aba="gmn">Google Meu Negócio</button>
     <button class="aba" data-aba="conteudo">Conteúdo semanal</button>
@@ -259,6 +260,44 @@
   <div id="listaClientes" class="lista"></div>
 </section>
 
+<!-- ============ IMPORTAR CLIENTES ============ -->
+<!-- Só admin: grava em "clientes", que guarda CPF e RG e é restrita a admin no banco.
+     Para funcionário a tela até apareceria, mas o banco recusaria a escrita. -->
+<section id="painel-importar" class="painel so-admin">
+  <div class="cabecalho-lista">
+    <h2>Importar clientes de uma planilha</h2>
+  </div>
+  <p class="nota">
+    Serve arquivo do Excel (.xlsx) ou .csv exportado de outro sistema. A primeira linha
+    precisa ser o cabeçalho com o nome das colunas. Nada é gravado antes de você conferir
+    a prévia e confirmar.
+  </p>
+
+  <label class="campo">
+    <span>Arquivo da planilha</span>
+    <input type="file" id="arquivoImportar" accept=".xlsx,.xls,.csv">
+  </label>
+
+  <div id="mapaImportar" class="mapa-importar oculto">
+    <h3>Confira o que cada coluna significa</h3>
+    <p class="nota">Deixe em branco o que a sua planilha não tem. Só o nome é obrigatório.</p>
+    <div id="camposImportar" class="grade-mapa"></div>
+  </div>
+
+  <div id="previaImportar" class="previa-importar oculto">
+    <h3 id="tituloPrevia"></h3>
+    <div class="rolagem-previa">
+      <table class="tabela-previa">
+        <thead id="cabecaPrevia"></thead>
+        <tbody id="corpoPrevia"></tbody>
+      </table>
+    </div>
+    <button type="button" id="btnImportar" class="principal">Importar</button>
+  </div>
+
+  <p id="importarAviso" class="aviso"></p>
+</section>
+
 <!-- ============ HISTÓRICO ============ -->
 <section id="painel-historico" class="painel so-admin">
   <div class="cabecalho-lista">
@@ -374,6 +413,10 @@
 <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/pdfmake.min.js"></script>
 <script src="vfs-helvetica.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!-- Lê .xlsx direto. Sem isto sobraria pedir "salve como CSV", e o Excel brasileiro
+     salva CSV com ponto e vírgula e acento quebrado, que é justamente onde a
+     importação estragaria os nomes. -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="contrato-texto.js"></script>
 <script src="contrato-pdf.js"></script>
 <script src="gmn.js"></script>
@@ -381,6 +424,7 @@
 <script src="gmn-seo.js"></script>
 <script src="gmn-relatorio.js"></script>
 <script src="gmn-plano.js"></script>
+<script src="importar.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

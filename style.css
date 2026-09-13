@@ -313,6 +313,25 @@ button.secundario:hover { border-color: var(--cinza); }
 .atrasados { margin-top: 28px; border-top: 1px solid var(--cinza-claro); padding-top: 20px; }
 .atrasados h2 { color: var(--vermelho); }
 
+/* ---------- importar clientes ---------- */
+
+.mapa-importar, .previa-importar { margin-top: 24px; border-top: 1px solid var(--cinza-claro); padding-top: 18px; }
+.mapa-importar h3, .previa-importar h3 { font-size: 14px; margin: 0 0 4px; }
+
+/* Duas colunas para os oito campos caberem sem rolagem: a correspondência precisa
+   ser conferida de uma olhada, senão ninguém confere. */
+.grade-mapa { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; margin-top: 14px; }
+
+/* A planilha manda na largura, não o app: com muitas colunas a tabela rola dentro
+   da caixa em vez de esticar a página inteira. */
+.rolagem-previa { overflow-x: auto; margin: 14px 0 16px; border: 1px solid var(--cinza-claro); border-radius: 8px; }
+.tabela-previa { border-collapse: collapse; width: 100%; font-size: 12px; }
+.tabela-previa th, .tabela-previa td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--cinza-claro); white-space: nowrap; }
+.tabela-previa th { background: var(--fundo); font-weight: 600; color: var(--cinza); }
+.tabela-previa tr:last-child td { border-bottom: 0; }
+.previa-novo { color: #1B7F3B; font-weight: 600; }
+.previa-repetido { color: var(--cinza); }
+
 /* na equipe cada linha é um formulário, então os campos não empilham */
 .equipe { margin-top: 22px; }
 .equipe .item-lista { padding: 10px 14px; }
@@ -398,4 +417,8 @@ body:not(.liberado) main { display: none; }
   .item-plano { flex-wrap: wrap; }
   .item-plano .info { flex: 1 1 100%; }
   .item-plano .etapas { flex: 1 1 100%; justify-content: flex-start; margin-top: 8px; }
+
+  /* duas colunas de correspondência no celular deixariam o select com 150px e o
+     nome da coluna da planilha cortado, que é justamente o que precisa ser lido */
+  .grade-mapa { grid-template-columns: 1fr; }
 }

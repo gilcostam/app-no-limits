@@ -439,6 +439,7 @@ $('btnSair').addEventListener('click', async () => {
   iniciarSeo();
   iniciarRelatorio();
   iniciarPlano();
+  iniciarImportacao();
 
   if (!sb) return liberarApp(null);
 
