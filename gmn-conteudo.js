@@ -14,6 +14,12 @@ const TAREFAS = [
 
 const SEMANAS = [1, 2, 3, 4];
 
+/* O onboarding gira nos quatro estados da planilha, mas aqui o "em andamento" fica
+   de fora: post ou foi publicado ou não foi, quase nunca fica pela metade, e o
+   estado extra cobrava um clique a mais justamente na ação mais comum da tela.
+   Linha antiga que ficou em andamento não quebra: o clique manda ela para concluído. */
+const SITUACOES_CONTEUDO = ['pendente', 'concluido', 'na'];
+
 let conteudos = [];
 
 /* ---------- carregamento ---------- */
@@ -158,7 +164,10 @@ async function aoClicarTarefa(evento) {
   const campo = botao.dataset.tarefa;
   const anterior = linha[campo];
 
-  linha[campo] = SITUACOES[(SITUACOES.indexOf(anterior) + 1) % SITUACOES.length];
+  // Math.max protege o estado que não está na fila daqui: indexOf devolveria -1 e
+  // o clique não sairia do lugar.
+  const atual = Math.max(SITUACOES_CONTEUDO.indexOf(anterior), 0);
+  linha[campo] = SITUACOES_CONTEUDO[(atual + 1) % SITUACOES_CONTEUDO.length];
   pintarCartaoConteudo(cliente, cartao);
 
   try {
