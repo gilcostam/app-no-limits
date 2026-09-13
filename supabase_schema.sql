@@ -132,8 +132,35 @@ create table if not exists gmn_onboarding (
 -- depois, não seria criada em quem já tinha a tabela. Daí este alter separado.
 alter table gmn_onboarding add column if not exists etapa_capa text not null default 'pendente';
 
+-- Cliente que saiu ou está pausado some das listas de trabalho sem perder o
+-- histórico. É a coluna "Etapa Atual" da planilha reduzida ao que o app usa.
+alter table gmn_onboarding add column if not exists ativo boolean not null default true;
+
 create index if not exists gmn_onboarding_responsavel_idx on gmn_onboarding (responsavel_id);
 create index if not exists gmn_onboarding_criado_idx on gmn_onboarding (criado_em desc);
+
+-- ============================================================
+-- GOOGLE MEU NEGÓCIO: CONTEÚDO SEMANAL
+-- ============================================================
+
+-- Uma linha por cliente, mês e semana, com as seis tarefas da aba "Conteúdo" da
+-- planilha. Na planilha o mês vira uma aba duplicada; aqui o mês é só uma coluna,
+-- então o histórico se acumula sozinho.
+create table if not exists gmn_conteudo (
+  id text primary key,
+  onboarding_id text references gmn_onboarding(id) on delete cascade,
+  mes text not null,
+  semana integer not null,
+  post text not null default 'pendente',
+  foto text not null default 'pendente',
+  qa text not null default 'pendente',
+  avaliacoes text not null default 'pendente',
+  horarios text not null default 'pendente',
+  produtos text not null default 'pendente',
+  criado_em timestamptz default now()
+);
+
+create index if not exists gmn_conteudo_mes_idx on gmn_conteudo (mes);
 
 -- ============================================================
 -- POLÍTICAS
@@ -143,6 +170,7 @@ alter table clientes enable row level security;
 alter table contratos enable row level security;
 alter table usuarios enable row level security;
 alter table gmn_onboarding enable row level security;
+alter table gmn_conteudo enable row level security;
 
 drop policy if exists "acesso autenticado" on clientes;
 drop policy if exists "clientes: somente admin" on clientes;
@@ -163,8 +191,14 @@ drop policy if exists "usuarios: escrita admin" on usuarios;
 create policy "usuarios: escrita admin" on usuarios
   for all to authenticated using (e_admin()) with check (e_admin());
 
+-- Onboarding e conteúdo não guardam dado pessoal, só nome do cliente e o andamento
+-- do trabalho, então o funcionário precisa e pode mexer nos dois.
 drop policy if exists "gmn: acesso autenticado" on gmn_onboarding;
 create policy "gmn: acesso autenticado" on gmn_onboarding
+  for all to authenticated using (true) with check (true);
+
+drop policy if exists "gmn conteudo: acesso autenticado" on gmn_conteudo;
+create policy "gmn conteudo: acesso autenticado" on gmn_conteudo
   for all to authenticated using (true) with check (true);
 
 -- Confira o resultado: você precisa aparecer como admin.

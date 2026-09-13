@@ -38,6 +38,7 @@
     <button class="aba so-admin" data-aba="clientes">Clientes</button>
     <button class="aba so-admin" data-aba="historico">Histórico</button>
     <button class="aba" data-aba="gmn">Google Meu Negócio</button>
+    <button class="aba" data-aba="conteudo">Conteúdo semanal</button>
   </nav>
   <span id="statusConexao" class="conexao"></span>
   <button id="btnSair" class="sair oculto">Sair</button>
@@ -276,6 +277,7 @@
     <select id="filtroSituacao" class="filtro">
       <option value="abertos">Em aberto</option>
       <option value="concluidos">Concluídos</option>
+      <option value="pausados">Pausados</option>
       <option value="">Todos</option>
     </select>
   </div>
@@ -291,6 +293,23 @@
 
 </section>
 
+<!-- ============ CONTEÚDO SEMANAL ============ -->
+<section id="painel-conteudo" class="painel">
+
+  <div class="cabecalho-lista">
+    <h2>Conteúdo semanal</h2>
+    <input type="month" id="conteudoMes" class="filtro" aria-label="Mês de referência">
+    <input type="search" id="buscaConteudo" placeholder="Buscar por cliente">
+    <select id="filtroResponsavelConteudo" class="filtro">
+      <option value="">Todos os responsáveis</option>
+    </select>
+  </div>
+
+  <div id="listaConteudo" class="lista"></div>
+  <p id="conteudoAviso" class="aviso"></p>
+
+</section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/pdfmake.min.js"></script>
@@ -299,6 +318,7 @@
 <script src="contrato-texto.js"></script>
 <script src="contrato-pdf.js"></script>
 <script src="gmn.js"></script>
+<script src="gmn-conteudo.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

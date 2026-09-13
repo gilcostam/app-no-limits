@@ -435,6 +435,7 @@ $('btnSair').addEventListener('click', async () => {
   alternarVisibilidade();
   aplicarValorPadrao();
   iniciarGmn();
+  iniciarConteudo();
 
   if (!sb) return liberarApp(null);
 

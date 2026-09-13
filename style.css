@@ -233,6 +233,12 @@ button.secundario:hover { border-color: var(--cinza); }
 .etapa.concluido { background: #E8F5EC; border-color: #9CCFAE; color: #1B7F3B; }
 .etapa.na { opacity: .55; text-decoration: line-through; }
 
+/* conteúdo semanal: as quatro semanas viram linhas dentro do mesmo cartão */
+.semana { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.semana .rotulo-semana { font-size: 12px; color: var(--cinza); flex: 0 0 74px; }
+.semana .etapas { margin-top: 0; flex: 1; }
+.semana.atual .rotulo-semana { color: var(--vermelho); font-weight: 600; }
+
 .extras { margin-top: 12px; border-top: 1px solid var(--cinza-claro); padding-top: 10px; }
 .extras summary { font-size: 12px; color: var(--cinza); cursor: pointer; }
 .extras .campo { margin-top: 10px; margin-bottom: 0; }

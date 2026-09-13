@@ -38,10 +38,13 @@ async function carregarGmn() {
   preencherClientesConhecidos();
   renderOnboarding();
   renderEquipe();
+  await carregarConteudo();
 }
 
 function preencherSelectsEquipe() {
-  [['gmnResponsavel', 'Sem responsável'], ['filtroResponsavel', 'Todos os responsáveis']]
+  [['gmnResponsavel', 'Sem responsável'],
+   ['filtroResponsavel', 'Todos os responsáveis'],
+   ['filtroResponsavelConteudo', 'Todos os responsáveis']]
     .forEach(([id, primeira]) => {
       const select = $(id);
       const atual = select.value;
@@ -77,6 +80,11 @@ function filtrarOnboarding() {
   return onboardings.filter(o => {
     if (busca && !o.cliente_nome.toLowerCase().includes(busca)) return false;
     if (responsavel && o.responsavel_id !== responsavel) return false;
+    // Cliente pausado aparece só no filtro dele e em "todos": quem saiu da
+    // agência não pode continuar ocupando a lista de trabalho.
+    const pausado = o.ativo === false;
+    if (situacao === 'pausados') return pausado;
+    if (situacao && pausado) return false;
     if (situacao === 'abertos' && o.concluido_em) return false;
     if (situacao === 'concluidos' && !o.concluido_em) return false;
     return true;
@@ -123,6 +131,7 @@ function montarCartao(o) {
         <label>Observações</label>
         <input type="text" data-campo="observacoes" placeholder="O que ficou pendente, combinados com o cliente">
       </div>
+      <label class="check"><input type="checkbox" data-campo="ativo"><span>Cliente ativo no Google Meu Negócio</span></label>
     </details>`;
 
   cartao.querySelector('[data-campo="link_drive"]').value = o.link_drive || '';
@@ -138,6 +147,7 @@ function pintarCartao(o, cartao) {
   const etiqueta = cartao.querySelector('.etiqueta');
   etiqueta.textContent = o.concluido_em ? 'onboarding concluído' : `${feitas} de ${total}`;
   etiqueta.classList.toggle('destaque', Boolean(o.concluido_em));
+  cartao.querySelector('[data-campo="ativo"]').checked = o.ativo !== false;
 
   ETAPAS.forEach(e => {
     const botao = cartao.querySelector(`[data-etapa="${e.campo}"]`);
@@ -182,12 +192,21 @@ function aoClicarEtapa(evento) {
   salvarOnboarding(registro, { [campo]: proxima }, cartao);
 }
 
-function aoEditarExtra(evento) {
+async function aoEditarExtra(evento) {
   const campo = evento.target.dataset.campo;
   if (!campo) return;
   const { cartao, registro } = registroDoEvento(evento);
   if (!registro) return;
-  salvarOnboarding(registro, { [campo]: evento.target.value.trim() }, cartao);
+
+  const valor = evento.target.type === 'checkbox' ? evento.target.checked : evento.target.value.trim();
+  await salvarOnboarding(registro, { [campo]: valor }, cartao);
+
+  // Pausar tira o cliente das duas listas de trabalho na hora. Se o salvamento
+  // falhou, salvarOnboarding já desfez e o redesenho mostra o estado real.
+  if (campo === 'ativo') {
+    renderOnboarding();
+    renderConteudo();
+  }
 }
 
 /* ---------- novo onboarding ---------- */
@@ -218,6 +237,7 @@ async function criarOnboarding() {
     ...Object.fromEntries(ETAPAS.map(e => [e.campo, 'pendente'])),
     link_drive: '',
     observacoes: '',
+    ativo: true,
     concluido_em: null,
     criado_em: new Date().toISOString(),
   };
@@ -227,6 +247,7 @@ async function criarOnboarding() {
     onboardings.unshift(await Store.salvar('gmn_onboarding', registro));
     $('gmnCliente').value = '';
     renderOnboarding();
+    renderConteudo();
     avisarGmn(`${registro.cliente_nome} entrou no onboarding.`, 'ok');
   } catch (e) {
     avisarGmn(`Não foi possível salvar: ${e.message}`, 'erro');
@@ -289,6 +310,7 @@ async function aoEditarEquipe(evento) {
     await Store.salvar('usuarios', pessoa);
     preencherSelectsEquipe();
     renderOnboarding();
+    renderConteudo();
     avisarEquipe(`${pessoa.nome} atualizado.`, 'ok');
   } catch (e) {
     pessoa[campo] = anterior;
