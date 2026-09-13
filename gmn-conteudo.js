@@ -39,16 +39,22 @@ function mesDe(data) {
 
 // A planilha trabalha com quatro semanas fixas, então os dias 29 em diante
 // continuam caindo na semana 4.
+function semanaDoMes(data) {
+  return Math.min(Math.ceil(data.getDate() / 7), 4);
+}
+
 function semanaAtual() {
   const hoje = new Date();
   if (mesDe(hoje) !== $('conteudoMes').value) return 0;
-  return Math.min(Math.ceil(hoje.getDate() / 7), 4);
+  return semanaDoMes(hoje);
 }
 
 /* ---------- linhas ---------- */
 
-function linhaSemana(onboardingId, semana) {
-  const mes = $('conteudoMes').value;
+// O mês é parâmetro com padrão, e não leitura direta do filtro, por causa do plano
+// da semana: ele sempre fala do mês de hoje, mesmo que alguém tenha deixado a aba
+// de conteúdo aberta em agosto para conferir o histórico.
+function linhaSemana(onboardingId, semana, mes = $('conteudoMes').value) {
   const id = `${onboardingId}__${mes}-s${semana}`;
   return conteudos.find(c => c.id === id) || {
     id,
@@ -62,8 +68,8 @@ function linhaSemana(onboardingId, semana) {
 
 // A linha só passa a existir quando alguém marca a primeira tarefa: mês sem
 // trabalho nenhum não precisa ocupar espaço no banco.
-function linhaGravavel(onboardingId, semana) {
-  const linha = linhaSemana(onboardingId, semana);
+function linhaGravavel(onboardingId, semana, mes) {
+  const linha = linhaSemana(onboardingId, semana, mes);
   if (!conteudos.includes(linha)) conteudos.push(linha);
   return linha;
 }
@@ -85,12 +91,12 @@ function progressoConteudo(onboardingId) {
 /* ---------- lista ---------- */
 
 function filtrarConteudo() {
-  const busca = $('buscaConteudo').value.trim().toLowerCase();
+  const busca = semAcento($('buscaConteudo').value.trim());
   const responsavel = $('filtroResponsavelConteudo').value;
 
   return onboardings.filter(o => {
     if (o.ativo === false) return false;
-    if (busca && !o.cliente_nome.toLowerCase().includes(busca)) return false;
+    if (busca && !semAcento(o.cliente_nome).includes(busca)) return false;
     if (responsavel && o.responsavel_id !== responsavel) return false;
     return true;
   });
@@ -172,6 +178,7 @@ async function aoClicarTarefa(evento) {
 
   try {
     await Store.salvar('gmn_conteudo', linha);
+    renderPlano();
     avisarConteudo('');
   } catch (e) {
     linha[campo] = anterior;

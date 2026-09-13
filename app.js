@@ -281,9 +281,9 @@ function carregarCliente(id) {
 }
 
 function renderClientes() {
-  const busca = $('buscaCliente').value.toLowerCase();
+  const busca = semAcento($('buscaCliente').value);
   const filtrados = clientes.filter(c =>
-    !busca || c.nome.toLowerCase().includes(busca) || (c.documento || '').includes(busca));
+    !busca || semAcento(c.nome).includes(busca) || (c.documento || '').includes(busca));
 
   $('listaClientes').innerHTML = filtrados.length
     ? filtrados.map(c => `
@@ -298,8 +298,8 @@ function renderClientes() {
 }
 
 function renderContratos() {
-  const busca = $('buscaContrato').value.toLowerCase();
-  const filtrados = contratos.filter(c => !busca || (c.cliente_nome || '').toLowerCase().includes(busca));
+  const busca = semAcento($('buscaContrato').value);
+  const filtrados = contratos.filter(c => !busca || semAcento(c.cliente_nome).includes(busca));
 
   $('listaContratos').innerHTML = filtrados.length
     ? filtrados.map(c => {
@@ -437,6 +437,8 @@ $('btnSair').addEventListener('click', async () => {
   iniciarGmn();
   iniciarConteudo();
   iniciarSeo();
+  iniciarRelatorio();
+  iniciarPlano();
 
   if (!sb) return liberarApp(null);
 

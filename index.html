@@ -34,12 +34,14 @@
     <span>Marketing Estratégico</span>
   </div>
   <nav class="abas">
-    <button class="aba ativa so-admin" data-aba="contrato">Novo contrato</button>
+    <button class="aba ativa" data-aba="plano">Plano da semana</button>
+    <button class="aba so-admin" data-aba="contrato">Novo contrato</button>
     <button class="aba so-admin" data-aba="clientes">Clientes</button>
     <button class="aba so-admin" data-aba="historico">Histórico</button>
     <button class="aba" data-aba="gmn">Google Meu Negócio</button>
     <button class="aba" data-aba="conteudo">Conteúdo semanal</button>
     <button class="aba" data-aba="seo">SEO e site</button>
+    <button class="aba" data-aba="relatorio">Relatório mensal</button>
   </nav>
   <span id="statusConexao" class="conexao"></span>
   <button id="btnSair" class="sair oculto">Sair</button>
@@ -47,8 +49,31 @@
 
 <main>
 
+<!-- ============ PLANO DA SEMANA ============ -->
+<section id="painel-plano" class="painel ativo">
+
+  <div class="faixa-dias" id="diasPlano"></div>
+
+  <div class="cabecalho-lista">
+    <h2 id="tituloPlano"></h2>
+    <input type="search" id="buscaPlano" placeholder="Buscar por cliente">
+  </div>
+  <p class="nota" id="resumoPlano"></p>
+
+  <div id="listaPlano" class="lista"></div>
+  <p id="planoAviso" class="aviso"></p>
+
+  <div id="atrasadosPlano" class="atrasados oculto">
+    <div class="cabecalho-lista">
+      <h2 id="tituloAtrasados"></h2>
+    </div>
+    <div id="listaAtrasados" class="lista"></div>
+  </div>
+
+</section>
+
 <!-- ============ NOVO CONTRATO ============ -->
-<section id="painel-contrato" class="painel ativo so-admin">
+<section id="painel-contrato" class="painel so-admin">
 
   <div class="colunas">
     <div class="coluna">
@@ -327,6 +352,23 @@
 
 </section>
 
+<!-- ============ RELATÓRIO MENSAL ============ -->
+<section id="painel-relatorio" class="painel">
+
+  <div class="cabecalho-lista">
+    <h2>Relatório mensal</h2>
+    <input type="month" id="relatorioMes" class="filtro" aria-label="Mês de referência">
+    <input type="search" id="buscaRelatorio" placeholder="Buscar por cliente">
+    <select id="filtroResponsavelRelatorio" class="filtro">
+      <option value="">Todos os responsáveis</option>
+    </select>
+  </div>
+
+  <div id="listaRelatorio" class="lista"></div>
+  <p id="relatorioAviso" class="aviso"></p>
+
+</section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/pdfmake.min.js"></script>
@@ -337,6 +379,8 @@
 <script src="gmn.js"></script>
 <script src="gmn-conteudo.js"></script>
 <script src="gmn-seo.js"></script>
+<script src="gmn-relatorio.js"></script>
+<script src="gmn-plano.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

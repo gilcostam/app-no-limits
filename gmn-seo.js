@@ -17,13 +17,23 @@ const ACOES_SEO = [
    diretórios e analisar posicionamento levam dias, não acabam no mesmo clique. */
 const SITUACOES_SEO = SITUACOES;
 
-/* A planilha tinha "Site Institucional" em pastilha e "Status do Site" em lista,
-   contando a mesma coisa duas vezes. Ficou só a lista. */
+/* O site era uma lista de status digitada na mão. O problema é que "em construção"
+   não responde o que falta para publicar, e quem pegava o cliente no meio não sabia
+   por onde continuar. Virou checklist, na ordem em que o trabalho acontece. */
+const ETAPAS_SITE = [
+  { campo: 'site_briefing', rotulo: 'Briefing e domínio', nome: 'Briefing preenchido e domínio definido' },
+  { campo: 'site_estrutura', rotulo: 'Estrutura', nome: 'Estrutura das páginas definida' },
+  { campo: 'site_textos', rotulo: 'Textos e fotos', nome: 'Textos escritos e fotos separadas' },
+  { campo: 'site_layout', rotulo: 'Layout', nome: 'Layout montado no construtor' },
+  { campo: 'site_onpage', rotulo: 'SEO on-page', nome: 'Títulos, descrições e imagens otimizados' },
+  { campo: 'site_revisao', rotulo: 'Revisão do cliente', nome: 'Cliente revisou e aprovou' },
+  { campo: 'site_publicacao', rotulo: 'Publicação', nome: 'Site no ar no domínio definitivo' },
+];
+
+/* Sobrou para a lista só a pergunta que o checklist não responde: este cliente vai
+   ter site ou não? O andamento agora sai das etapas, em statusSite(). */
 const SITUACAO_SITE = [
-  { valor: 'nao_iniciado', rotulo: 'Não iniciado' },
-  { valor: 'construcao', rotulo: 'Em construção' },
-  { valor: 'revisao', rotulo: 'Em revisão' },
-  { valor: 'publicado', rotulo: 'Publicado' },
+  { valor: 'sim', rotulo: 'Vai ter site' },
   { valor: 'na', rotulo: 'Não se aplica' },
 ];
 
@@ -42,7 +52,8 @@ function linhaSeo(onboardingId) {
   return seos.find(s => s.id === onboardingId) || {
     id: onboardingId,
     ...Object.fromEntries(ACOES_SEO.map(a => [a.campo, 'pendente'])),
-    site: 'nao_iniciado',
+    ...Object.fromEntries(ETAPAS_SITE.map(e => [e.campo, 'pendente'])),
+    site: 'sim',
     link_site: '',
     criado_em: new Date().toISOString(),
   };
@@ -55,36 +66,49 @@ function linhaSeoGravavel(onboardingId) {
   return linha;
 }
 
-// O site entra na conta junto com as pastilhas: publicar o site é uma ação de SEO
-// concluída como qualquer outra, e deixar de fora faria o contador mentir.
+// SEO e site passaram a ter contador próprio. Somar os dois num número só escondia
+// justamente o que o Gilmar quis ver: o cliente pode estar ótimo no perfil e parado
+// no site, e um "8 de 14" não conta essa história.
 function progressoSeo(onboardingId) {
+  return contar(linhaSeo(onboardingId), ACOES_SEO);
+}
+
+function progressoSite(onboardingId) {
   const linha = linhaSeo(onboardingId);
-  let feitas = 0;
-  let total = 0;
+  if (linha.site === 'na') return { feitas: 0, total: 0 };
+  return contar(linha, ETAPAS_SITE);
+}
 
-  ACOES_SEO.forEach(a => {
-    if (linha[a.campo] === 'na') return;
-    total += 1;
-    if (linha[a.campo] === 'concluido') feitas += 1;
-  });
+// O status do site deixou de ser digitado: agora é lido do checklist. Publicação
+// feita é "publicado", revisão feita é "em revisão", qualquer etapa mexida é
+// "em construção". Assim o status nunca contradiz as etapas, que era o defeito da
+// planilha, onde a Policlínica aparecia de dois jeitos ao mesmo tempo.
+function statusSite(linha) {
+  if (linha.site === 'na') return 'Não se aplica';
+  if (linha.site_publicacao === 'concluido') return 'Publicado';
+  if (linha.site_revisao === 'concluido') return 'Em revisão';
+  const mexeu = ETAPAS_SITE.some(e => linha[e.campo] !== 'pendente');
+  return mexeu ? 'Em construção' : 'Não iniciado';
+}
 
-  if (linha.site !== 'na') {
-    total += 1;
-    if (linha.site === 'publicado') feitas += 1;
-  }
-
-  return { feitas, total };
+// O "plano de ação" que o Gilmar pediu, na sua forma mais curta: a primeira etapa
+// que ainda não foi concluída. Quem abre o cartão não precisa ler as sete pastilhas
+// para saber por onde continuar.
+function proximoPassoSite(linha) {
+  if (linha.site === 'na') return '';
+  const proxima = ETAPAS_SITE.find(e => linha[e.campo] !== 'concluido' && linha[e.campo] !== 'na');
+  return proxima ? proxima.nome : 'site concluído';
 }
 
 /* ---------- lista ---------- */
 
 function filtrarSeo() {
-  const busca = $('buscaSeo').value.trim().toLowerCase();
+  const busca = semAcento($('buscaSeo').value.trim());
   const responsavel = $('filtroResponsavelSeo').value;
 
   return onboardings.filter(o => {
     if (o.ativo === false) return false;
-    if (busca && !o.cliente_nome.toLowerCase().includes(busca)) return false;
+    if (busca && !semAcento(o.cliente_nome).includes(busca)) return false;
     if (responsavel && o.responsavel_id !== responsavel) return false;
     return true;
   });
@@ -109,21 +133,32 @@ function montarCartaoSeo(o) {
         <strong>${escapar(o.cliente_nome)}</strong>
         <span>${escapar(responsavel ? responsavel.nome : 'sem responsável')}</span>
       </div>
-      <span class="etiqueta">0 de 0</span>
+      <span class="etiqueta etiqueta-seo">0 de 0</span>
     </div>
     <div class="etapas">
       ${ACOES_SEO.map(a => `<button type="button" class="etapa" data-acao="${a.campo}">${escapar(a.rotulo)}</button>`).join('')}
     </div>
-    <div class="linha-site">
-      <div class="campo pequeno-site">
-        <label>Site institucional</label>
-        <select data-campo="site"></select>
+    <div class="bloco-site">
+      <div class="titulo-bloco">
+        <span>Site institucional</span>
+        <span class="status-site"></span>
+        <span class="etiqueta etiqueta-site">0 de 0</span>
       </div>
-      <div class="campo grande">
-        <label>Link do site</label>
-        <input type="url" data-campo="link_site" placeholder="https://exemplo.com.br">
+      <div class="etapas">
+        ${ETAPAS_SITE.map(e => `<button type="button" class="etapa" data-acao="${e.campo}">${escapar(e.rotulo)}</button>`).join('')}
       </div>
-      <a class="abrir-site" target="_blank" rel="noopener noreferrer">abrir</a>
+      <p class="proximo-passo"></p>
+      <div class="linha-site">
+        <div class="campo pequeno-site">
+          <label>Este cliente tem site?</label>
+          <select data-campo="site"></select>
+        </div>
+        <div class="campo grande">
+          <label>Link do site</label>
+          <input type="url" data-campo="link_site" placeholder="https://exemplo.com.br">
+        </div>
+        <a class="abrir-site" target="_blank" rel="noopener noreferrer">abrir</a>
+      </div>
     </div>`;
 
   // O texto das opções vem de constante nossa, mas monto pelo DOM por hábito: o
@@ -137,17 +172,27 @@ function montarCartaoSeo(o) {
 
 function pintarCartaoSeo(o, cartao) {
   const linha = linhaSeo(o.id);
-  const { feitas, total } = progressoSeo(o.id);
+  const temSite = linha.site !== 'na';
 
-  const etiqueta = cartao.querySelector('.etiqueta');
-  etiqueta.textContent = `${feitas} de ${total}`;
-  etiqueta.classList.toggle('destaque', total > 0 && feitas === total);
+  pintarEtiqueta(cartao.querySelector('.etiqueta-seo'), progressoSeo(o.id));
+  const etiquetaSite = cartao.querySelector('.etiqueta-site');
+  pintarEtiqueta(etiquetaSite, progressoSite(o.id));
+  etiquetaSite.classList.toggle('oculto', !temSite);
 
-  ACOES_SEO.forEach(a => {
+  ACOES_SEO.concat(ETAPAS_SITE).forEach(a => {
     const botao = cartao.querySelector(`[data-acao="${a.campo}"]`);
     botao.className = `etapa ${linha[a.campo]}`;
     botao.title = `${a.nome}: ${NOME_SITUACAO[linha[a.campo]]}, clique para mudar`;
   });
+
+  cartao.querySelector('.status-site').textContent = statusSite(linha);
+
+  // Sem site não há etapa nenhuma para mostrar, mas a lista e o status ficam: é por
+  // ali que a pessoa desfaz o "não se aplica" se tiver marcado errado.
+  cartao.querySelector('.bloco-site .etapas').classList.toggle('oculto', !temSite);
+  const passo = cartao.querySelector('.proximo-passo');
+  passo.textContent = temSite ? `Próximo: ${proximoPassoSite(linha)}` : '';
+  passo.classList.toggle('oculto', !temSite);
 
   cartao.querySelector('[data-campo="site"]').value = linha.site;
   const campoLink = cartao.querySelector('[data-campo="link_site"]');
@@ -171,6 +216,7 @@ async function salvarSeo(o, linha, mudancas, cartao) {
 
   try {
     await Store.salvar('gmn_seo', linha);
+    renderPlano();
     avisarSeo('');
   } catch (e) {
     Object.assign(linha, anterior);

@@ -26,6 +26,42 @@ const NOME_SITUACAO = {
 let onboardings = [];
 let equipe = [];
 
+/* ---------- ferramentas compartilhadas ---------- */
+/* Vivem aqui porque as quatro telas de GMN usam: cada uma tem uma lista de ações
+   com a mesma forma ({ campo, rotulo, nome }) e uma etiqueta de progresso igual. */
+
+// Data local, não toISOString: em UTC a noite brasileira já é o dia seguinte, e o
+// relatório enviado numa sexta à noite apareceria como enviado no sábado.
+function hojeISO() {
+  const hoje = new Date();
+  return `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+}
+
+// Buscar "clinica" tem que achar "Clínica". Ninguém digita acento numa caixa de busca,
+// e boa parte dos nomes de cliente tem um: Clínica, Policlínica, José, Antônio.
+// normalize('NFD') separa a letra do acento, e o replace joga o acento fora.
+function semAcento(texto) {
+  return (texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+// "não se aplica" sai da conta inteira, em vez de contar como feito: um cliente com
+// três etapas dispensadas não pode aparecer mais adiantado do que realmente está.
+function contar(linha, acoes) {
+  let feitas = 0;
+  let total = 0;
+  acoes.forEach(a => {
+    if (linha[a.campo] === 'na') return;
+    total += 1;
+    if (linha[a.campo] === 'concluido') feitas += 1;
+  });
+  return { feitas, total };
+}
+
+function pintarEtiqueta(etiqueta, { feitas, total }) {
+  etiqueta.textContent = `${feitas} de ${total}`;
+  etiqueta.classList.toggle('destaque', total > 0 && feitas === total);
+}
+
 /* ---------- carregamento ---------- */
 
 async function carregarGmn() {
@@ -38,15 +74,20 @@ async function carregarGmn() {
   preencherClientesConhecidos();
   renderOnboarding();
   renderEquipe();
+  // Em série de propósito: o plano lê conteúdo, SEO e relatório para montar o
+  // placar dos cinco dias, então precisa ser o último e com os três já na mão.
   await carregarConteudo();
   await carregarSeo();
+  await carregarRelatorio();
+  renderPlano();
 }
 
 function preencherSelectsEquipe() {
   [['gmnResponsavel', 'Sem responsável'],
    ['filtroResponsavel', 'Todos os responsáveis'],
    ['filtroResponsavelConteudo', 'Todos os responsáveis'],
-   ['filtroResponsavelSeo', 'Todos os responsáveis']]
+   ['filtroResponsavelSeo', 'Todos os responsáveis'],
+   ['filtroResponsavelRelatorio', 'Todos os responsáveis']]
     .forEach(([id, primeira]) => {
       const select = $(id);
       const atual = select.value;
@@ -75,12 +116,12 @@ function progresso(o) {
 /* ---------- lista ---------- */
 
 function filtrarOnboarding() {
-  const busca = $('buscaOnboarding').value.trim().toLowerCase();
+  const busca = semAcento($('buscaOnboarding').value.trim());
   const responsavel = $('filtroResponsavel').value;
   const situacao = $('filtroSituacao').value;
 
   return onboardings.filter(o => {
-    if (busca && !o.cliente_nome.toLowerCase().includes(busca)) return false;
+    if (busca && !semAcento(o.cliente_nome).includes(busca)) return false;
     if (responsavel && o.responsavel_id !== responsavel) return false;
     // Cliente pausado aparece só no filtro dele e em "todos": quem saiu da
     // agência não pode continuar ocupando a lista de trabalho.
@@ -207,16 +248,23 @@ async function aoEditarExtra(evento) {
   // falhou, salvarOnboarding já desfez e o redesenho mostra o estado real.
   if (campo === 'ativo') {
     renderOnboarding();
-    renderConteudo();
-    renderSeo();
+    renderTelasDeTrabalho();
   }
+}
+
+// As quatro telas que listam clientes ativos mudam juntas: pausar um cliente,
+// renomear alguém da equipe ou entrar com cliente novo muda as quatro de uma vez.
+function renderTelasDeTrabalho() {
+  renderConteudo();
+  renderSeo();
+  renderRelatorio();
+  renderPlano();
 }
 
 /* ---------- novo onboarding ---------- */
 
 function apelido(nome) {
-  return nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return semAcento(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 async function criarOnboarding() {
@@ -250,8 +298,7 @@ async function criarOnboarding() {
     onboardings.unshift(await Store.salvar('gmn_onboarding', registro));
     $('gmnCliente').value = '';
     renderOnboarding();
-    renderConteudo();
-    renderSeo();
+    renderTelasDeTrabalho();
     avisarGmn(`${registro.cliente_nome} entrou no onboarding.`, 'ok');
   } catch (e) {
     avisarGmn(`Não foi possível salvar: ${e.message}`, 'erro');
@@ -314,8 +361,7 @@ async function aoEditarEquipe(evento) {
     await Store.salvar('usuarios', pessoa);
     preencherSelectsEquipe();
     renderOnboarding();
-    renderConteudo();
-    renderSeo();
+    renderTelasDeTrabalho();
     avisarEquipe(`${pessoa.nome} atualizado.`, 'ok');
   } catch (e) {
     pessoa[campo] = anterior;

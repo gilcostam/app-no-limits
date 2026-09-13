@@ -239,6 +239,16 @@ button.secundario:hover { border-color: var(--cinza); }
 .semana .etapas { margin-top: 0; flex: 1; }
 .semana.atual .rotulo-semana { color: var(--vermelho); font-weight: 600; }
 
+/* seo: o site ganhou bloco próprio porque virou um checklist do tamanho do de SEO,
+   e sem a linha separando os dois viravam catorze pastilhas soltas no mesmo cartão */
+.bloco-site { margin-top: 14px; border-top: 1px solid var(--cinza-claro); padding-top: 12px; }
+
+.titulo-bloco { display: flex; align-items: center; gap: 10px; }
+.titulo-bloco > span:first-child { font-size: 12px; font-weight: 600; color: var(--cinza); text-transform: uppercase; letter-spacing: .5px; }
+.titulo-bloco .status-site { flex: 1; font-size: 12px; color: var(--preto); }
+
+.proximo-passo { font-size: 12px; color: var(--vermelho); margin: 10px 0 0; }
+
 /* seo: o status do site e o link ficam na mesma linha, abaixo das pastilhas */
 .linha-site { display: flex; align-items: flex-end; gap: 10px; margin-top: 12px; }
 .linha-site .campo { margin-bottom: 0; }
@@ -258,6 +268,50 @@ button.secundario:hover { border-color: var(--cinza); }
 .extras { margin-top: 12px; border-top: 1px solid var(--cinza-claro); padding-top: 10px; }
 .extras summary { font-size: 12px; color: var(--cinza); cursor: pointer; }
 .extras .campo { margin-top: 10px; margin-bottom: 0; }
+
+/* ---------- plano da semana ---------- */
+
+/* Os cinco dias são a tela inteira em miniatura: cada um diz o que se faz nele e
+   quantos clientes já estão prontos, então dá para escolher onde trabalhar sem
+   abrir dia por dia. */
+.faixa-dias { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+
+.dia {
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: var(--branco);
+  border: 1px solid var(--cinza-claro);
+  border-radius: 8px;
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.dia:hover { border-color: var(--cinza); }
+.dia strong { font-size: 13px; color: var(--preto); }
+.dia .tarefa-do-dia { font-size: 11px; color: var(--cinza); line-height: 1.3; }
+/* margin-top: auto empurra o placar para o rodapé do cartão. Sem isso, "Diretórios,
+   terminar e enviar os relatórios" quebra em duas linhas, só o placar da sexta desce,
+   e os cinco números deixam de ficar na mesma altura. */
+.dia .placar { font-size: 11px; color: var(--cinza); margin-top: auto; padding-top: 4px; }
+
+/* Hoje ganha a borda, o dia escolhido ganha o fundo: são perguntas diferentes
+   ("que dia é hoje" e "que dia estou olhando") e precisam sobreviver juntas. */
+.dia.hoje { border-color: var(--vermelho); }
+.dia.escolhido { background: var(--vermelho); border-color: var(--vermelho); }
+.dia.escolhido strong, .dia.escolhido .tarefa-do-dia, .dia.escolhido .placar { color: var(--branco); }
+.dia.escolhido .tarefa-do-dia, .dia.escolhido .placar { opacity: .85; }
+.dia.pronto:not(.escolhido) .placar { color: #1B7F3B; font-weight: 600; }
+
+.item-plano .etapas { margin-top: 0; flex: 0 0 auto; justify-content: flex-end; }
+/* Quem já está pronto continua na lista para poder ser desmarcado, mas apagado:
+   a lista existe para mostrar o que falta. */
+.item-plano.resolvido { opacity: .55; }
+.item-plano.resolvido:hover { opacity: 1; }
+
+.atrasados { margin-top: 28px; border-top: 1px solid var(--cinza-claro); padding-top: 20px; }
+.atrasados h2 { color: var(--vermelho); }
 
 /* na equipe cada linha é um formulário, então os campos não empilham */
 .equipe { margin-top: 22px; }
@@ -331,4 +385,17 @@ body:not(.liberado) main { display: none; }
   .cabecalho-lista { flex-wrap: wrap; }
   .cabecalho-lista h2 { flex: 1 1 100%; }
   .cabecalho-lista input, .cabecalho-lista .filtro { max-width: none; flex: 1 1 150px; }
+
+  /* cinco dias lado a lado no celular dariam 70px cada e a frase da tarefa sairia
+     quebrada letra a letra; empilhados viram uma agenda da semana */
+  .faixa-dias { grid-template-columns: 1fr; gap: 6px; }
+  .dia { flex-direction: row; align-items: baseline; gap: 8px; }
+  .dia strong { flex: 0 0 62px; }
+  .dia .tarefa-do-dia { flex: 1; }
+  .dia .placar { margin-top: 0; }
+
+  /* no cartão do plano as pastilhas precisam descer, senão espremem o nome */
+  .item-plano { flex-wrap: wrap; }
+  .item-plano .info { flex: 1 1 100%; }
+  .item-plano .etapas { flex: 1 1 100%; justify-content: flex-start; margin-top: 8px; }
 }
