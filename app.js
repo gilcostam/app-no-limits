@@ -436,6 +436,7 @@ $('btnSair').addEventListener('click', async () => {
   aplicarValorPadrao();
   iniciarGmn();
   iniciarConteudo();
+  iniciarSeo();
 
   if (!sb) return liberarApp(null);
 

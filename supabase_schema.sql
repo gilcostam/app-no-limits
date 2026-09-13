@@ -163,6 +163,31 @@ create table if not exists gmn_conteudo (
 create index if not exists gmn_conteudo_mes_idx on gmn_conteudo (mes);
 
 -- ============================================================
+-- GOOGLE MEU NEGÓCIO: SEO E SITE
+-- ============================================================
+
+-- Uma linha por cliente, sem mês: é um estado que vai evoluindo, não trabalho que
+-- se repete toda semana. Por isso o id é o próprio id do onboarding, que já serve
+-- de chave e de vínculo ao mesmo tempo.
+--
+-- A planilha tem "Site Institucional" (✅/⏳/❌/N/A) e "Status do Site" (cinco
+-- opções) lado a lado, contando a mesma história de dois jeitos, e a Policlínica
+-- já estava com as duas se contradizendo. Aqui ficou só a coluna "site".
+create table if not exists gmn_seo (
+  id text primary key references gmn_onboarding(id) on delete cascade,
+  palavras_chave text not null default 'pendente',
+  diretorios text not null default 'pendente',
+  avaliacoes text not null default 'pendente',
+  conteudo_site text not null default 'pendente',
+  redes text not null default 'pendente',
+  youtube text not null default 'pendente',
+  posicionamento text not null default 'pendente',
+  site text not null default 'nao_iniciado',
+  link_site text default '',
+  criado_em timestamptz default now()
+);
+
+-- ============================================================
 -- POLÍTICAS
 -- ============================================================
 
@@ -171,6 +196,7 @@ alter table contratos enable row level security;
 alter table usuarios enable row level security;
 alter table gmn_onboarding enable row level security;
 alter table gmn_conteudo enable row level security;
+alter table gmn_seo enable row level security;
 
 drop policy if exists "acesso autenticado" on clientes;
 drop policy if exists "clientes: somente admin" on clientes;
@@ -191,14 +217,18 @@ drop policy if exists "usuarios: escrita admin" on usuarios;
 create policy "usuarios: escrita admin" on usuarios
   for all to authenticated using (e_admin()) with check (e_admin());
 
--- Onboarding e conteúdo não guardam dado pessoal, só nome do cliente e o andamento
--- do trabalho, então o funcionário precisa e pode mexer nos dois.
+-- Onboarding, conteúdo e SEO não guardam dado pessoal, só nome do cliente e o
+-- andamento do trabalho, então o funcionário precisa e pode mexer nos três.
 drop policy if exists "gmn: acesso autenticado" on gmn_onboarding;
 create policy "gmn: acesso autenticado" on gmn_onboarding
   for all to authenticated using (true) with check (true);
 
 drop policy if exists "gmn conteudo: acesso autenticado" on gmn_conteudo;
 create policy "gmn conteudo: acesso autenticado" on gmn_conteudo
+  for all to authenticated using (true) with check (true);
+
+drop policy if exists "gmn seo: acesso autenticado" on gmn_seo;
+create policy "gmn seo: acesso autenticado" on gmn_seo
   for all to authenticated using (true) with check (true);
 
 -- Confira o resultado: você precisa aparecer como admin.

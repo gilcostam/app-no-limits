@@ -39,12 +39,14 @@ async function carregarGmn() {
   renderOnboarding();
   renderEquipe();
   await carregarConteudo();
+  await carregarSeo();
 }
 
 function preencherSelectsEquipe() {
   [['gmnResponsavel', 'Sem responsável'],
    ['filtroResponsavel', 'Todos os responsáveis'],
-   ['filtroResponsavelConteudo', 'Todos os responsáveis']]
+   ['filtroResponsavelConteudo', 'Todos os responsáveis'],
+   ['filtroResponsavelSeo', 'Todos os responsáveis']]
     .forEach(([id, primeira]) => {
       const select = $(id);
       const atual = select.value;
@@ -201,11 +203,12 @@ async function aoEditarExtra(evento) {
   const valor = evento.target.type === 'checkbox' ? evento.target.checked : evento.target.value.trim();
   await salvarOnboarding(registro, { [campo]: valor }, cartao);
 
-  // Pausar tira o cliente das duas listas de trabalho na hora. Se o salvamento
+  // Pausar tira o cliente das listas de trabalho na hora. Se o salvamento
   // falhou, salvarOnboarding já desfez e o redesenho mostra o estado real.
   if (campo === 'ativo') {
     renderOnboarding();
     renderConteudo();
+    renderSeo();
   }
 }
 
@@ -248,6 +251,7 @@ async function criarOnboarding() {
     $('gmnCliente').value = '';
     renderOnboarding();
     renderConteudo();
+    renderSeo();
     avisarGmn(`${registro.cliente_nome} entrou no onboarding.`, 'ok');
   } catch (e) {
     avisarGmn(`Não foi possível salvar: ${e.message}`, 'erro');
@@ -311,6 +315,7 @@ async function aoEditarEquipe(evento) {
     preencherSelectsEquipe();
     renderOnboarding();
     renderConteudo();
+    renderSeo();
     avisarEquipe(`${pessoa.nome} atualizado.`, 'ok');
   } catch (e) {
     pessoa[campo] = anterior;

@@ -39,6 +39,7 @@
     <button class="aba so-admin" data-aba="historico">Histórico</button>
     <button class="aba" data-aba="gmn">Google Meu Negócio</button>
     <button class="aba" data-aba="conteudo">Conteúdo semanal</button>
+    <button class="aba" data-aba="seo">SEO e site</button>
   </nav>
   <span id="statusConexao" class="conexao"></span>
   <button id="btnSair" class="sair oculto">Sair</button>
@@ -310,6 +311,22 @@
 
 </section>
 
+<!-- ============ SEO E SITE ============ -->
+<section id="painel-seo" class="painel">
+
+  <div class="cabecalho-lista">
+    <h2>SEO e site</h2>
+    <input type="search" id="buscaSeo" placeholder="Buscar por cliente">
+    <select id="filtroResponsavelSeo" class="filtro">
+      <option value="">Todos os responsáveis</option>
+    </select>
+  </div>
+
+  <div id="listaSeo" class="lista"></div>
+  <p id="seoAviso" class="aviso"></p>
+
+</section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/pdfmake.min.js"></script>
@@ -319,6 +336,7 @@
 <script src="contrato-pdf.js"></script>
 <script src="gmn.js"></script>
 <script src="gmn-conteudo.js"></script>
+<script src="gmn-seo.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
