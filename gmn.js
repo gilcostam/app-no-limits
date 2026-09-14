@@ -74,11 +74,14 @@ async function carregarGmn() {
   preencherClientesConhecidos();
   renderOnboarding();
   renderEquipe();
-  // Em série de propósito: o plano lê conteúdo, SEO e relatório para montar o
-  // placar dos cinco dias, então precisa ser o último e com os três já na mão.
+  // Em série de propósito: o plano lê conteúdo, SEO, relatório e a rotina do site
+  // para montar o placar dos cinco dias, então precisa ser o último e com os
+  // quatro já na mão. A rotina do site depende do SEO duas vezes, para saber quem
+  // tem site e para ler a linha, então nunca pode vir antes dele.
   await carregarConteudo();
   await carregarSeo();
   await carregarRelatorio();
+  await carregarSite();
   renderPlano();
 }
 

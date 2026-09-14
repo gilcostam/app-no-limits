@@ -231,6 +231,47 @@ create table if not exists gmn_relatorio (
 create index if not exists gmn_relatorio_mes_idx on gmn_relatorio (mes);
 
 -- ============================================================
+-- ROTINA SEMANAL DO SITE (SEO, GEO E AEO)
+-- ============================================================
+
+-- Mesma forma da tabela de conteúdo, uma linha por cliente, mês e semana, porque o
+-- trabalho é do mesmo tipo: repete toda semana e o histórico precisa se acumular.
+--
+-- As cinco colunas de situação são os cinco dias da semana. A ordem não é decorativa,
+-- cada dia consome o que o dia anterior produziu: a pergunta colhida na segunda vira
+-- a resposta publicada na terça, que é marcada e enviada para indexar na quarta, que
+-- é comparada com o concorrente na quinta e medida na sexta.
+--
+-- Não há uma coluna para SEO, outra para GEO e outra para AEO de propósito. Os três
+-- leem o mesmo artefato: a resposta direta no topo da página serve o buscador, a IA
+-- generativa e o assistente de voz ao mesmo tempo. Três colunas dariam três tarefas
+-- para o mesmo trabalho feito uma vez só.
+--
+-- "termo" é o termo mais buscado da semana, escolhido na segunda. Ele fica aqui e não
+-- na tabela de SEO porque muda toda semana: na tabela de SEO, que não tem mês, o termo
+-- de agosto seria apagado pelo de setembro e ninguém saberia mais o que foi trabalhado.
+--
+-- "artigo" é o artigo do blog, que é um por mês e não um por semana. Ele mora na linha
+-- da semana 4, a única que existe uma vez por mês, e é lá que a tela mostra ele. Mês sem
+-- semana 4 não existe, então não há mês sem lugar para o artigo.
+create table if not exists gmn_site (
+  id text primary key,
+  onboarding_id text references gmn_onboarding(id) on delete cascade,
+  mes text not null,
+  semana integer not null,
+  perguntas text not null default 'pendente',
+  resposta text not null default 'pendente',
+  indexacao text not null default 'pendente',
+  concorrencia text not null default 'pendente',
+  placar text not null default 'pendente',
+  artigo text not null default 'pendente',
+  termo text default '',
+  criado_em timestamptz default now()
+);
+
+create index if not exists gmn_site_mes_idx on gmn_site (mes);
+
+-- ============================================================
 -- POLÍTICAS
 -- ============================================================
 
@@ -241,6 +282,7 @@ alter table gmn_onboarding enable row level security;
 alter table gmn_conteudo enable row level security;
 alter table gmn_seo enable row level security;
 alter table gmn_relatorio enable row level security;
+alter table gmn_site enable row level security;
 
 drop policy if exists "acesso autenticado" on clientes;
 drop policy if exists "clientes: somente admin" on clientes;
@@ -261,8 +303,8 @@ drop policy if exists "usuarios: escrita admin" on usuarios;
 create policy "usuarios: escrita admin" on usuarios
   for all to authenticated using (e_admin()) with check (e_admin());
 
--- Onboarding, conteúdo, SEO e relatório não guardam dado pessoal, só nome do
--- cliente e o andamento do trabalho, então o funcionário precisa e pode mexer.
+-- Onboarding, conteúdo, SEO, relatório e rotina do site não guardam dado pessoal,
+-- só nome do cliente e o andamento do trabalho, então o funcionário precisa e pode mexer.
 -- O relatório cita a cobrança do Asaas, mas só o status dela: nada de valor,
 -- nota fiscal ou meio de pagamento, que é o que exigiria trancar por admin.
 drop policy if exists "gmn: acesso autenticado" on gmn_onboarding;
@@ -279,6 +321,10 @@ create policy "gmn seo: acesso autenticado" on gmn_seo
 
 drop policy if exists "gmn relatorio: acesso autenticado" on gmn_relatorio;
 create policy "gmn relatorio: acesso autenticado" on gmn_relatorio
+  for all to authenticated using (true) with check (true);
+
+drop policy if exists "gmn site: acesso autenticado" on gmn_site;
+create policy "gmn site: acesso autenticado" on gmn_site
   for all to authenticated using (true) with check (true);
 
 -- Confira o resultado: você precisa aparecer como admin.

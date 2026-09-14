@@ -310,6 +310,23 @@ button.secundario:hover { border-color: var(--cinza); }
 .item-plano.resolvido { opacity: .55; }
 .item-plano.resolvido:hover { opacity: 1; }
 
+/* O termo da semana fica junto do nome do cliente, e não como mais uma pastilha na
+   direita, porque ele não é uma tarefa para marcar: é o assunto do cliente naquela
+   semana, a informação em cima da qual as pastilhas do site fazem sentido. */
+.item-plano .termo-semana {
+  display: block;
+  max-width: 280px;
+  margin-top: 6px;
+  font-size: 12px;
+  padding: 5px 9px;
+}
+
+.item-plano .termo-eco { display: block; margin-top: 4px; }
+/* Termo em falta em vermelho: a segunda-feira deixou de entregar o que a terça
+   precisa, e isso não pode passar despercebido só porque as pastilhas do dia
+   anterior ficaram verdes. */
+.item-plano .termo-eco.faltando { color: var(--vermelho); }
+
 .atrasados { margin-top: 28px; border-top: 1px solid var(--cinza-claro); padding-top: 20px; }
 .atrasados h2 { color: var(--vermelho); }
 
