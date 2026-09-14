@@ -313,6 +313,29 @@ button.secundario:hover { border-color: var(--cinza); }
 .atrasados { margin-top: 28px; border-top: 1px solid var(--cinza-claro); padding-top: 20px; }
 .atrasados h2 { color: var(--vermelho); }
 
+/* ---------- editar cliente ---------- */
+
+/* A linha inteira é o alvo do clique, não um lápis de 16px no canto: a lista é
+   feita para ser varrida no celular, onde mira pequena erra. */
+.item-lista.clicavel { cursor: pointer; }
+.item-lista.clicavel:hover { border-color: var(--cinza); }
+.item-lista.clicavel:focus-visible { outline: 2px solid var(--vermelho); outline-offset: 2px; }
+
+.edicao-cliente { border: 1px solid var(--cinza-claro); border-radius: 10px; padding: 18px; margin-bottom: 18px; background: var(--fundo); }
+.edicao-cliente h3 { font-size: 15px; margin: 0; }
+.grade-edicao { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; margin-top: 14px; }
+/* Nome e endereço ocupam a linha toda: são os dois que não cabem em um terço. */
+.grade-edicao .grande { grid-column: 1 / -1; }
+
+/* O bloco da rotina fica separado por uma linha porque ele não grava na ficha do
+   cliente, grava no cartão do Google Meu Negócio. São dois destinos diferentes
+   saindo do mesmo botão, e o desenho tem que deixar isso visível. */
+.rotina-edicao { margin-top: 6px; border-top: 1px solid var(--cinza-claro); padding-top: 14px; }
+.rotina-edicao .campo { max-width: 320px; }
+.rotina-edicao .nota { margin: 6px 0 0; }
+.edicao-cliente .acoes { margin-top: 16px; }
+.edicao-cliente .acoes button { flex: 0 0 auto; }
+
 /* ---------- importar clientes ---------- */
 
 .mapa-importar, .previa-importar { margin-top: 24px; border-top: 1px solid var(--cinza-claro); padding-top: 18px; }
@@ -429,4 +452,8 @@ body:not(.liberado) main { display: none; }
   /* duas colunas de correspondência no celular deixariam o select com 150px e o
      nome da coluna da planilha cortado, que é justamente o que precisa ser lido */
   .grade-mapa { grid-template-columns: 1fr; }
+
+  /* três colunas de ficha no celular dariam 110px por campo, e CPF não cabe em
+     110px sem o começo do número sumir enquanto se digita */
+  .grade-edicao { grid-template-columns: 1fr; }
 }

@@ -267,24 +267,30 @@ function apelido(nome) {
   return semAcento(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-async function criarOnboarding() {
-  const nome = $('gmnCliente').value.trim();
-  if (!nome) return avisarGmn('Informe o nome do cliente.', 'erro');
-
-  if (onboardings.some(o => !o.concluido_em && o.cliente_nome.toLowerCase() === nome.toLowerCase())) {
-    return avisarGmn(`${nome} já está em onboarding.`, 'erro');
+/* Existem três portas para o mesmo cliente entrar na rotina: o contrato, a
+   importação da planilha e o cadastro manual aqui. Procurar antes de criar é o
+   que impede a mesma clínica de virar dois cartões com dois históricos.
+   Pelo cliente_id primeiro, que é vínculo firme, e pelo nome depois, que é o que
+   sobra quando o onboarding é mais antigo que a ficha. */
+function onboardingDoCliente(nome, clienteId) {
+  if (clienteId) {
+    const porId = onboardings.find(o => o.cliente_id === clienteId);
+    if (porId) return porId;
   }
+  const limpo = semAcento(nome || '');
+  return onboardings.find(o => semAcento(o.cliente_nome) === limpo) || null;
+}
 
-  // O vínculo com a ficha do cliente é oportunista: casa pelo nome quando o
-  // cliente já veio de um contrato, e fica solto quando é cliente antigo.
-  const ficha = clientes.find(c => c.nome.toLowerCase() === nome.toLowerCase());
-
-  const registro = {
+/* Uma fábrica só para o registro do onboarding, porque agora são três chamadores.
+   Cada cópia do objeto literal era uma chance de um deles esquecer um campo e
+   gravar cartão torto, do tipo que só aparece meses depois. */
+function novoOnboarding({ nome, clienteId = null, responsavelId = null, dataInicio = null }) {
+  return {
     id: `${apelido(nome)}-${Date.now()}`,
-    cliente_id: ficha ? ficha.id : null,
-    cliente_nome: ficha ? ficha.nome : nome,
-    responsavel_id: $('gmnResponsavel').value || null,
-    data_inicio: $('gmnDataInicio').value || null,
+    cliente_id: clienteId,
+    cliente_nome: nome,
+    responsavel_id: responsavelId || null,
+    data_inicio: dataInicio || null,
     ...Object.fromEntries(ETAPAS.map(e => [e.campo, 'pendente'])),
     link_drive: '',
     observacoes: '',
@@ -292,6 +298,26 @@ async function criarOnboarding() {
     concluido_em: null,
     criado_em: new Date().toISOString(),
   };
+}
+
+async function criarOnboarding() {
+  const nome = $('gmnCliente').value.trim();
+  if (!nome) return avisarGmn('Informe o nome do cliente.', 'erro');
+
+  if (onboardings.some(o => !o.concluido_em && semAcento(o.cliente_nome) === semAcento(nome))) {
+    return avisarGmn(`${nome} já está em onboarding.`, 'erro');
+  }
+
+  // O vínculo com a ficha do cliente é oportunista: casa pelo nome quando o
+  // cliente já veio de um contrato, e fica solto quando é cliente antigo.
+  const ficha = clientes.find(c => semAcento(c.nome) === semAcento(nome));
+
+  const registro = novoOnboarding({
+    nome: ficha ? ficha.nome : nome,
+    clienteId: ficha ? ficha.id : null,
+    responsavelId: $('gmnResponsavel').value,
+    dataInicio: $('gmnDataInicio').value,
+  });
 
   $('btnNovoOnboarding').disabled = true;
   try {

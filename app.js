@@ -182,8 +182,29 @@ async function gerar(acao) {
   }
 }
 
+/* O mesmo cliente chega por três portas: contrato, planilha e cadastro manual.
+   Achar a ficha que já existe antes de criar outra é o que impede a mesma clínica
+   de virar duas linhas, cada uma com metade do histórico.
+
+   Documento primeiro, porque é o único dado que de fato identifica; nome depois,
+   porque é o que sobra quando a planilha veio sem CPF. Reaproveitar o id da ficha
+   encontrada também é o que permite corrigir o documento depois sem quebrar nada:
+   o id nunca muda, só o campo. */
+function acharCliente(nome, documento) {
+  const digitos = (documento || '').replace(/\D/g, '');
+  if (digitos) {
+    const porDocumento = clientes.find(c => (c.documento || '').replace(/\D/g, '') === digitos);
+    if (porDocumento) return porDocumento;
+  }
+  const limpo = semAcento(nome || '');
+  return clientes.find(c => semAcento(c.nome) === limpo) || null;
+}
+
 async function registrar(d) {
-  const idCliente = `${d.documento.replace(/\D/g, '') || d.nome.toLowerCase().replace(/\s+/g, '-')}`;
+  const fichaExistente = acharCliente(d.nome, d.documento);
+  const idCliente = fichaExistente
+    ? fichaExistente.id
+    : (d.documento.replace(/\D/g, '') || apelido(d.nome));
   const cliente = {
     id: idCliente,
     tipo_pessoa: d.tipoPessoa,
@@ -228,6 +249,20 @@ async function registrar(d) {
   try {
     await Store.salvar('clientes', cliente);
     await Store.salvar('contratos', contrato);
+
+    /* Fechou contrato, entrou na rotina. Antes o cliente virava ficha e parava
+       aí: na segunda-feira seguinte ele não aparecia na lista de avaliações para
+       responder, porque só a importação criava onboarding. Quem assinou é
+       exatamente quem precisa de manutenção, então o contrato não podia ser a
+       única porta que não abria. */
+    if (!onboardingDoCliente(d.nome, idCliente)) {
+      await Store.salvar('gmn_onboarding', novoOnboarding({
+        nome: d.nome,
+        clienteId: idCliente,
+        dataInicio: hojeISO(),
+      }));
+    }
+
     await carregarDados();
   } catch (e) {
     avisar(`PDF gerado, mas não foi possível salvar o registro: ${e.message}`, 'erro');
@@ -243,10 +278,15 @@ async function carregarDados() {
     clientes = await Store.listar('clientes');
     contratos = await Store.listar('contratos');
     preencherSelectClientes();
-    renderClientes();
     renderContratos();
   }
   await carregarGmn();
+
+  /* A lista de clientes fica para depois do GMN porque a legenda de cada linha diz
+     quem cuida do cliente, e isso não mora na ficha, mora no cartão do onboarding.
+     Pintada antes, a lista abria com todo mundo marcado como "fora da rotina" e só
+     se corrigia na primeira gravação, que é quando a tela era repintada. */
+  if (ehAdmin()) renderClientes();
 }
 
 function preencherSelectClientes() {
@@ -285,16 +325,173 @@ function renderClientes() {
   const filtrados = clientes.filter(c =>
     !busca || semAcento(c.nome).includes(busca) || (c.documento || '').includes(busca));
 
-  $('listaClientes').innerHTML = filtrados.length
-    ? filtrados.map(c => `
-      <div class="item-lista">
-        <div class="info">
-          <strong>${escapar(c.nome)}</strong>
-          <span>${escapar([c.documento, [c.cidade, c.uf].filter(Boolean).join(' - '), c.email].filter(Boolean).join('  ·  '))}</span>
-        </div>
-        <span class="etiqueta">${c.tipo_pessoa === 'PJ' ? 'Pessoa jurídica' : 'Pessoa física'}</span>
-      </div>`).join('')
-    : '<p class="vazio">Nenhum cliente cadastrado ainda.</p>';
+  const lista = $('listaClientes');
+  lista.innerHTML = '';
+  if (!filtrados.length) {
+    lista.innerHTML = '<p class="vazio">Nenhum cliente cadastrado ainda.</p>';
+    return;
+  }
+
+  filtrados.forEach(c => {
+    const onboarding = onboardingDoCliente(c.nome, c.id);
+    const responsavel = onboarding && equipe.find(u => u.id === onboarding.responsavel_id);
+    // Quem cuida do cliente é a informação que o Gilmar procura na lista, mais
+    // que a cidade: sem ela a pergunta "de quem é esse?" só se responde abrindo.
+    const legenda = [
+      c.documento,
+      [c.cidade, c.uf].filter(Boolean).join(' - '),
+      responsavel ? responsavel.nome : (onboarding ? 'sem responsável' : 'fora da rotina'),
+    ].filter(Boolean).join('  ·  ');
+
+    const item = document.createElement('div');
+    item.className = 'item-lista clicavel';
+    item.dataset.id = c.id;
+    item.tabIndex = 0;
+    item.innerHTML = `
+      <div class="info">
+        <strong>${escapar(c.nome)}</strong>
+        <span>${escapar(legenda)}</span>
+      </div>
+      <span class="etiqueta">${c.tipo_pessoa === 'PJ' ? 'Pessoa jurídica' : 'Pessoa física'}</span>`;
+    lista.appendChild(item);
+  });
+}
+
+/* ---------- editar cliente ---------- */
+
+let clienteEmEdicao = null;
+
+/* Classes próprias, .ed-pf e .ed-pj, em vez das .so-pf do formulário de contrato:
+   aquelas são varridas com querySelectorAll no documento inteiro, então reusá-las
+   aqui faria mexer no tipo de pessoa de uma tela esconder campo da outra. */
+function alternarVisibilidadeEdicao() {
+  const pj = $('edTipoPessoa').value === 'PJ';
+  document.querySelectorAll('#edicaoCliente .ed-pf').forEach(e => e.classList.toggle('oculto', pj));
+  document.querySelectorAll('#edicaoCliente .ed-pj').forEach(e => e.classList.toggle('oculto', !pj));
+}
+
+function abrirEdicaoCliente(id) {
+  const c = clientes.find(x => x.id === id);
+  if (!c) return;
+  clienteEmEdicao = c;
+
+  const onboarding = onboardingDoCliente(c.nome, c.id);
+
+  $('tituloEdicao').textContent = c.nome;
+  $('edTipoPessoa').value = c.tipo_pessoa || 'PF';
+  $('edSexo').value = c.sexo || 'F';
+  $('edNome').value = c.nome || '';
+  $('edDocumento').value = c.documento || '';
+  $('edRg').value = c.rg || '';
+  $('edResponsavelLegal').value = c.responsavel_legal || '';
+  $('edEndereco').value = c.endereco || '';
+  $('edCidade').value = c.cidade || '';
+  $('edUf').value = c.uf || '';
+  $('edCep').value = c.cep || '';
+  $('edEmail').value = c.email || '';
+  $('edTelefone').value = c.telefone || '';
+
+  const select = $('edResponsavel');
+  select.innerHTML = '';
+  select.appendChild(new Option('sem responsável', ''));
+  equipe.filter(u => u.ativo).forEach(u => select.appendChild(new Option(u.nome, u.id)));
+  select.value = onboarding?.responsavel_id || '';
+
+  /* Cliente fora da rotina não tem onde guardar responsável, então o campo fica
+     desligado e no lugar aparece a caixa de incluir. Mostrar um select que não
+     salva nada seria pior que não mostrar. */
+  $('edNaRotina').checked = !!onboarding;
+  $('edNaRotina').disabled = !!onboarding;
+  $('edRotinaNota').textContent = onboarding
+    ? 'Já está na rotina da semana.'
+    : 'Este cliente está fora da rotina. Marque para incluir.';
+  select.disabled = !onboarding && !$('edNaRotina').checked;
+
+  alternarVisibilidadeEdicao();
+  $('edicaoCliente').classList.remove('oculto');
+  avisarCliente('');
+  $('edNome').focus();
+}
+
+function fecharEdicaoCliente() {
+  clienteEmEdicao = null;
+  $('edicaoCliente').classList.add('oculto');
+  avisarCliente('');
+}
+
+async function salvarCliente() {
+  if (!clienteEmEdicao) return;
+
+  const nome = $('edNome').value.trim();
+  if (!nome) return avisarCliente('O nome não pode ficar em branco.', 'erro');
+
+  const documento = $('edDocumento').value.trim();
+  const digitos = documento.replace(/\D/g, '');
+
+  /* Dois clientes com o mesmo CPF são sempre erro de digitação, e deixar passar
+     quebraria a busca por documento, que é o que liga a ficha ao contrato. */
+  const conflito = digitos && clientes.find(c =>
+    c.id !== clienteEmEdicao.id && (c.documento || '').replace(/\D/g, '') === digitos);
+  if (conflito) return avisarCliente(`Esse documento já é de ${conflito.nome}.`, 'erro');
+
+  const atualizado = {
+    ...clienteEmEdicao,
+    tipo_pessoa: $('edTipoPessoa').value,
+    sexo: $('edSexo').value,
+    nome,
+    documento,
+    rg: $('edRg').value.trim(),
+    responsavel_legal: $('edResponsavelLegal').value.trim(),
+    endereco: $('edEndereco').value.trim(),
+    cidade: $('edCidade').value.trim(),
+    uf: $('edUf').value.trim().toUpperCase().slice(0, 2),
+    cep: $('edCep').value.trim(),
+    email: $('edEmail').value.trim(),
+    telefone: $('edTelefone').value.trim(),
+  };
+
+  $('btnSalvarCliente').disabled = true;
+  avisarCliente('Salvando...');
+
+  try {
+    await Store.salvar('clientes', atualizado);
+
+    const onboarding = onboardingDoCliente(clienteEmEdicao.nome, clienteEmEdicao.id);
+    if (onboarding) {
+      /* O nome viaja junto. Sem isto, corrigir "Clinica Vida" para "Clínica Vida"
+         na ficha deixaria o cartão do plano da semana com o nome velho, e os dois
+         pareceriam clientes diferentes. */
+      await Store.salvar('gmn_onboarding', {
+        ...onboarding,
+        cliente_id: atualizado.id,
+        cliente_nome: nome,
+        responsavel_id: $('edResponsavel').value || null,
+      });
+    } else if ($('edNaRotina').checked) {
+      await Store.salvar('gmn_onboarding', novoOnboarding({
+        nome,
+        clienteId: atualizado.id,
+        responsavelId: $('edResponsavel').value,
+        dataInicio: hojeISO(),
+      }));
+    }
+
+    await carregarDados();
+    // Reabrir relê a ficha recarregada, então o "fora da rotina" vira "já está na
+    // rotina" na hora, sem o Gilmar precisar fechar e clicar de novo. O aviso vem
+    // depois porque reabrir limpa a área de aviso.
+    if (clientes.some(c => c.id === atualizado.id)) abrirEdicaoCliente(atualizado.id);
+    avisarCliente(`${nome} foi atualizado.`, 'ok');
+  } catch (e) {
+    avisarCliente(`Não foi possível salvar: ${e.message}`, 'erro');
+  }
+  $('btnSalvarCliente').disabled = false;
+}
+
+function avisarCliente(texto, tipo = '') {
+  const aviso = $('clienteAviso');
+  aviso.textContent = texto;
+  aviso.className = `aviso ${tipo}`;
 }
 
 function renderContratos() {
@@ -338,6 +535,26 @@ $('addonRedes').addEventListener('change', () => { alternarVisibilidade(); atual
 $('clienteExistente').addEventListener('change', e => carregarCliente(e.target.value));
 $('buscaCliente').addEventListener('input', renderClientes);
 $('buscaContrato').addEventListener('input', renderContratos);
+
+// Delegação: a lista é repintada a cada busca e a cada gravação, e religar
+// escutador em cada linha a cada repintura é como escutador vaza.
+$('listaClientes').addEventListener('click', e => {
+  const item = e.target.closest('.item-lista');
+  if (item) abrirEdicaoCliente(item.dataset.id);
+});
+$('listaClientes').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const item = e.target.closest('.item-lista');
+  if (!item) return;
+  e.preventDefault();
+  abrirEdicaoCliente(item.dataset.id);
+});
+$('btnSalvarCliente').addEventListener('click', salvarCliente);
+$('btnFecharEdicao').addEventListener('click', fecharEdicaoCliente);
+// Sem onboarding o select de responsável fica travado, porque não teria onde
+// gravar. Marcar "incluir na rotina" é o que destrava.
+$('edNaRotina').addEventListener('change', e => { $('edResponsavel').disabled = !e.target.checked; });
+$('edTipoPessoa').addEventListener('change', alternarVisibilidadeEdicao);
 $('btnVisualizar').addEventListener('click', () => gerar('abrir'));
 $('btnBaixar').addEventListener('click', () => gerar('baixar'));
 

@@ -257,6 +257,88 @@
     <h2>Clientes cadastrados</h2>
     <input type="search" id="buscaCliente" placeholder="Buscar por nome ou documento">
   </div>
+  <p class="nota">Clique em um cliente para corrigir os dados e definir quem cuida dele.</p>
+
+  <div id="edicaoCliente" class="edicao-cliente oculto">
+    <div class="cabecalho-lista">
+      <h3 id="tituloEdicao"></h3>
+      <button type="button" id="btnFecharEdicao" class="secundario">Fechar</button>
+    </div>
+
+    <div class="grade-edicao">
+      <label class="campo">
+        <span>Tipo de pessoa</span>
+        <select id="edTipoPessoa">
+          <option value="PF">Pessoa física</option>
+          <option value="PJ">Pessoa jurídica</option>
+        </select>
+      </label>
+      <label class="campo ed-pf">
+        <span>Sexo</span>
+        <select id="edSexo">
+          <option value="F">Feminino</option>
+          <option value="M">Masculino</option>
+        </select>
+      </label>
+      <label class="campo grande">
+        <span>Nome</span>
+        <input type="text" id="edNome">
+      </label>
+      <label class="campo">
+        <span>CPF ou CNPJ</span>
+        <input type="text" id="edDocumento">
+      </label>
+      <label class="campo ed-pf">
+        <span>RG</span>
+        <input type="text" id="edRg">
+      </label>
+      <label class="campo ed-pj oculto">
+        <span>Responsável legal</span>
+        <input type="text" id="edResponsavelLegal">
+      </label>
+      <label class="campo">
+        <span>E-mail</span>
+        <input type="email" id="edEmail">
+      </label>
+      <label class="campo">
+        <span>Telefone</span>
+        <input type="text" id="edTelefone">
+      </label>
+      <label class="campo grande">
+        <span>Endereço</span>
+        <input type="text" id="edEndereco">
+      </label>
+      <label class="campo">
+        <span>Cidade</span>
+        <input type="text" id="edCidade">
+      </label>
+      <label class="campo">
+        <span>Estado (UF)</span>
+        <input type="text" id="edUf" maxlength="2">
+      </label>
+      <label class="campo">
+        <span>CEP</span>
+        <input type="text" id="edCep">
+      </label>
+    </div>
+
+    <!-- O responsável não mora na ficha do cliente, mora no cartão do Google Meu
+         Negócio. Por isso ele só grava quando o cliente está na rotina. -->
+    <div class="rotina-edicao">
+      <label class="campo">
+        <span>Quem cuida deste cliente</span>
+        <select id="edResponsavel"></select>
+      </label>
+      <label class="check"><input type="checkbox" id="edNaRotina"><span>Na rotina da semana</span></label>
+      <p id="edRotinaNota" class="nota"></p>
+    </div>
+
+    <div class="acoes">
+      <button type="button" id="btnSalvarCliente" class="primario">Salvar alterações</button>
+    </div>
+    <p id="clienteAviso" class="aviso"></p>
+  </div>
+
   <div id="listaClientes" class="lista"></div>
 </section>
 

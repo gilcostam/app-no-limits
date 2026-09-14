@@ -234,16 +234,19 @@ function lerPlanilha() {
   });
 }
 
-// Mesma regra do contrato: o id do cliente são os dígitos do documento, e o nome
-// vira id só quando não há documento. Assim a planilha e o contrato gravam o
-// mesmo cliente na mesma linha, em vez de criarem dois.
+/* Reaproveita a ficha que já existe, achada por documento ou por nome, em vez de
+   sempre cunhar id novo. É o que faz o contrato e a planilha gravarem o mesmo
+   cliente na mesma linha mesmo quando um dos dois veio sem CPF: o id fica de pé
+   e só o campo do documento é preenchido. */
 function idDoCliente(registro) {
-  const digitos = registro.documento.replace(/\D/g, '');
-  return digitos || apelido(registro.nome);
+  const existente = acharCliente(registro.nome, registro.documento);
+  if (existente) return existente.id;
+  return registro.documento.replace(/\D/g, '') || apelido(registro.nome);
 }
 
-function jaTemOnboarding(nome) {
-  return onboardings.some(o => semAcento(o.cliente_nome) === semAcento(nome));
+function jaTemOnboarding(nome, documento) {
+  const ficha = acharCliente(nome, documento);
+  return !!onboardingDoCliente(nome, ficha ? ficha.id : null);
 }
 
 /* Planilha exportada de sistema de cobrança costuma ter uma linha por cobrança, não
@@ -267,7 +270,7 @@ function paraImportar() {
     validos,
     semNome: registros.filter(r => r.nome === '').length,
     duplicados: registros.filter(r => r.nome !== '').length - validos.length,
-    novos: validos.filter(r => !jaTemOnboarding(r.nome)),
+    novos: validos.filter(r => !jaTemOnboarding(r.nome, r.documento)),
   };
 }
 
@@ -307,7 +310,7 @@ function renderPrevia() {
       tr.appendChild(td);
     });
     const td = document.createElement('td');
-    const repetido = jaTemOnboarding(r.nome);
+    const repetido = jaTemOnboarding(r.nome, r.documento);
     td.textContent = repetido ? 'já existe' : 'novo';
     td.className = repetido ? 'previa-repetido' : 'previa-novo';
     tr.appendChild(td);
@@ -353,19 +356,11 @@ async function importarClientes() {
         criado_em: new Date().toISOString(),
       });
 
-      await Store.salvar('gmn_onboarding', {
-        id: `${apelido(registro.nome)}-${Date.now()}`,
-        cliente_id: id,
-        cliente_nome: registro.nome,
-        responsavel_id: null,
-        data_inicio: hojeISO(),
-        ...Object.fromEntries(ETAPAS.map(e => [e.campo, 'pendente'])),
-        link_drive: '',
-        observacoes: '',
-        ativo: true,
-        concluido_em: null,
-        criado_em: new Date().toISOString(),
-      });
+      await Store.salvar('gmn_onboarding', novoOnboarding({
+        nome: registro.nome,
+        clienteId: id,
+        dataInicio: hojeISO(),
+      }));
 
       gravados += 1;
     } catch (e) {
@@ -379,7 +374,7 @@ async function importarClientes() {
   if (falhas.length) {
     avisarImportar(`${gravados} importados. ${falhas.length} não entraram, ${falhas[0]}`, 'erro');
   } else {
-    avisarImportar(`${gravados} ${gravados === 1 ? 'cliente entrou' : 'clientes entraram'} no cadastro e no plano da semana. Falta definir o responsável de cada um na aba Google Meu Negócio.`, 'ok');
+    avisarImportar(`${gravados} ${gravados === 1 ? 'cliente entrou' : 'clientes entraram'} no cadastro e no plano da semana. Falta dizer quem cuida de cada um: clique no cliente na aba Clientes.`, 'ok');
   }
 }
 
