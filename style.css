@@ -332,6 +332,14 @@ button.secundario:hover { border-color: var(--cinza); }
 .previa-novo { color: #1B7F3B; font-weight: 600; }
 .previa-repetido { color: var(--cinza); }
 
+/* O modelo vem recolhido porque é referência, não etapa: serve na primeira vez e
+   some depois. Aberto por padrão, empurraria o campo do arquivo para baixo da dobra
+   justamente para quem já sabe o que fazer. */
+.modelo-importar { margin: 16px 0 20px; border: 1px solid var(--cinza-claro); border-radius: 8px; padding: 12px 16px; }
+.modelo-importar summary { font-size: 13px; font-weight: 600; cursor: pointer; }
+.modelo-importar[open] summary { margin-bottom: 12px; }
+.modelo-importar .rolagem-previa { margin: 12px 0; }
+
 /* na equipe cada linha é um formulário, então os campos não empilham */
 .equipe { margin-top: 22px; }
 .equipe .item-lista { padding: 10px 14px; }

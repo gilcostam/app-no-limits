@@ -23,29 +23,102 @@
 
 /* Cada campo do app com os nomes de coluna que costumam aparecer na planilha.
    A comparação é sem acento e sem maiúscula, via semAcento(), então "Endereço" e
-   "endereco" caem no mesmo lugar. */
+   "endereco" caem no mesmo lugar.
+
+   "coluna" é o nome oficial, o que sai no modelo para baixar e o que a tabela de
+   referência mostra na tela. Ele é sempre um dos palpites, de propósito: assim a
+   planilha feita a partir do modelo cai com as oito colunas já reconhecidas, sem
+   ninguém precisar corrigir nada. */
 const CAMPOS_IMPORTAR = [
   { campo: 'nome', rotulo: 'Nome do cliente', obrigatorio: true,
+    coluna: 'Nome', exemplo: 'Clínica Vida Ltda',
     palpites: ['nome', 'cliente', 'razao social', 'nome fantasia', 'empresa', 'nome completo'] },
   { campo: 'documento', rotulo: 'CPF ou CNPJ',
+    coluna: 'CPF/CNPJ', exemplo: '12.345.678/0001-90',
     palpites: ['documento', 'cpf', 'cnpj', 'cpf/cnpj', 'cpf cnpj', 'doc'] },
   { campo: 'email', rotulo: 'E-mail',
+    coluna: 'E-mail', exemplo: 'contato@clinicavida.com.br',
     palpites: ['email', 'e-mail', 'mail', 'correio'] },
   { campo: 'telefone', rotulo: 'Telefone',
+    coluna: 'Telefone', exemplo: '(32) 99999-0000',
     palpites: ['telefone', 'celular', 'whatsapp', 'zap', 'fone', 'contato'] },
   { campo: 'endereco', rotulo: 'Endereço',
+    coluna: 'Endereço', exemplo: 'Rua das Flores, 120, Centro',
     palpites: ['endereco', 'logradouro', 'rua', 'endereco completo'] },
   { campo: 'cidade', rotulo: 'Cidade',
+    coluna: 'Cidade', exemplo: 'Ubá',
     palpites: ['cidade', 'municipio', 'localidade'] },
   { campo: 'uf', rotulo: 'Estado (UF)',
+    coluna: 'UF', exemplo: 'MG',
     palpites: ['uf', 'estado', 'sigla'] },
   { campo: 'cep', rotulo: 'CEP',
+    coluna: 'CEP', exemplo: '36500-000',
     palpites: ['cep', 'codigo postal'] },
+];
+
+/* Uma linha de empresa e uma de pessoa física, porque a dúvida de quem preenche é
+   sempre a mesma: "e quando o cliente é pessoa física?". O app decide PF ou PJ
+   pela quantidade de dígitos do documento, não por uma coluna a mais. */
+const EXEMPLOS_MODELO = [
+  ['Clínica Vida Ltda', '12.345.678/0001-90', 'contato@clinicavida.com.br',
+   '(32) 99999-0000', 'Rua das Flores, 120, Centro', 'Ubá', 'MG', '36500-000'],
+  ['Maria Aparecida Silva', '123.456.789-01', 'maria@email.com',
+   '(32) 98888-1111', 'Avenida Brasil, 45, Bela Vista', 'Ubá', 'MG', '36503-000'],
 ];
 
 let cabecalhoPlanilha = [];
 let linhasPlanilha = [];
 let mapaColunas = {};
+
+/* ---------- modelo de planilha ---------- */
+
+/* A tabela de referência é montada a partir de CAMPOS_IMPORTAR, não escrita à mão
+   no HTML. Se um campo novo entrar na importação amanhã, a explicação na tela
+   acompanha sozinha, em vez de virar documentação velha dizendo uma coisa enquanto
+   o app faz outra. */
+function renderModeloColunas() {
+  const corpo = $('corpoModelo');
+  corpo.innerHTML = '';
+
+  CAMPOS_IMPORTAR.forEach(({ coluna, obrigatorio, exemplo }) => {
+    const tr = document.createElement('tr');
+
+    const tdColuna = document.createElement('td');
+    tdColuna.textContent = coluna;
+
+    const tdPrecisa = document.createElement('td');
+    tdPrecisa.textContent = obrigatorio ? 'obrigatória' : 'opcional';
+    tdPrecisa.className = obrigatorio ? 'previa-novo' : 'previa-repetido';
+
+    const tdExemplo = document.createElement('td');
+    tdExemplo.textContent = exemplo;
+
+    tr.append(tdColuna, tdPrecisa, tdExemplo);
+    corpo.appendChild(tr);
+  });
+}
+
+function baixarModelo() {
+  const cabecalho = CAMPOS_IMPORTAR.map(c => c.coluna);
+  const larguras = CAMPOS_IMPORTAR.map(c => ({ wch: Math.max(c.coluna.length, c.exemplo.length) + 2 }));
+  const pasta = XLSX.utils.book_new();
+
+  /* A primeira aba é a única que o app lê, e ela sai só com o cabeçalho. Se o
+     modelo já viesse com a linha de exemplo preenchida, bastaria alguém esquecer
+     de apagar para a "Clínica Vida Ltda" virar cliente de verdade no plano da
+     semana. O exemplo fica na segunda aba, onde dá para copiar mas não para
+     importar sem querer. */
+  const folha = XLSX.utils.aoa_to_sheet([cabecalho]);
+  folha['!cols'] = larguras;
+  XLSX.utils.book_append_sheet(pasta, folha, 'Clientes');
+
+  const exemplo = XLSX.utils.aoa_to_sheet([cabecalho, ...EXEMPLOS_MODELO]);
+  exemplo['!cols'] = larguras;
+  XLSX.utils.book_append_sheet(pasta, exemplo, 'Exemplo preenchido');
+
+  XLSX.writeFile(pasta, 'modelo-importacao-no-limits.xlsx');
+  avisarImportar('Modelo baixado. Preencha a aba "Clientes" e escolha o arquivo aqui em cima.', 'ok');
+}
 
 /* ---------- leitura do arquivo ---------- */
 
@@ -327,6 +400,8 @@ function avisarImportar(texto, tipo = '') {
 }
 
 function iniciarImportacao() {
+  renderModeloColunas();
+  $('btnModelo').addEventListener('click', baixarModelo);
   $('arquivoImportar').addEventListener('change', aoEscolherArquivo);
   $('btnImportar').addEventListener('click', importarClientes);
 }

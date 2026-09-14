@@ -273,6 +273,36 @@
     a prévia e confirmar.
   </p>
 
+  <!-- Fechado por padrão: quem já sabe o formato só quer escolher o arquivo, e a
+       tabela de referência aberta empurraria o campo do arquivo para fora da tela. -->
+  <details class="modelo-importar">
+    <summary>O que a planilha precisa ter</summary>
+
+    <p class="nota">
+      Estes são os nomes de coluna que o app reconhece sozinho. Se a planilha do outro
+      sistema usar outros nomes, tudo bem: ela é aceita do mesmo jeito e você ajusta a
+      correspondência na tela seguinte, antes de gravar.
+    </p>
+
+    <div class="rolagem-previa">
+      <table class="tabela-previa">
+        <thead>
+          <tr><th>Coluna</th><th>Precisa?</th><th>Exemplo</th></tr>
+        </thead>
+        <tbody id="corpoModelo"></tbody>
+      </table>
+    </div>
+
+    <p class="nota">
+      Só o nome é obrigatório, mas peça sempre o CPF ou CNPJ: é ele que impede o mesmo
+      cliente de entrar duas vezes e que liga a ficha ao contrato gerado aqui dentro.
+      Sem documento, dois clientes de mesmo nome viram um só. Uma linha por cliente,
+      não uma por cobrança.
+    </p>
+
+    <button type="button" id="btnModelo" class="secundario">Baixar modelo de planilha</button>
+  </details>
+
   <label class="campo">
     <span>Arquivo da planilha</span>
     <input type="file" id="arquivoImportar" accept=".xlsx,.xls,.csv">
@@ -292,7 +322,7 @@
         <tbody id="corpoPrevia"></tbody>
       </table>
     </div>
-    <button type="button" id="btnImportar" class="principal">Importar</button>
+    <button type="button" id="btnImportar" class="primario">Importar</button>
   </div>
 
   <p id="importarAviso" class="aviso"></p>
