@@ -220,8 +220,22 @@ function renderizarListaClientesSite() {
     return;
   }
 
+  /* Só quem contratou site. Definido na aba Workflow. */
+  const contratantes = Servicos.comServico('site');
+
+  if (siteCliente && !contratantes.some(c => c.id === siteCliente.id)) {
+    siteCliente = null;
+    renderizarSite();
+  }
+
+  if (contratantes.length === 0) {
+    lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente com site contratado. Marque o serviço na aba Workflow.</div>';
+    return;
+  }
+
   const termo = semAcentos(buscaSite.trim());
-  const filtrados = [...clientes]
+  const filtrados = contratantes
+    .slice()
     .sort((a, b) => (a.nome || '').localeCompare(b.nome || ''))
     .filter(c => !termo
       || semAcentos(c.nome).includes(termo)

@@ -132,8 +132,22 @@ function renderizarListaClientesDir() {
     return;
   }
 
+  /* Só quem contratou diretórios locais. Definido na aba Workflow. */
+  const contratantes = Servicos.comServico('dir');
+
+  if (dirCliente && !contratantes.some(c => c.id === dirCliente.id)) {
+    dirCliente = null;
+    renderizarDiretorios();
+  }
+
+  if (contratantes.length === 0) {
+    lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente com diretórios locais contratados. Marque o serviço na aba Workflow.</div>';
+    return;
+  }
+
   const termo = semAcentos(buscaDir.trim());
-  const filtrados = [...clientes]
+  const filtrados = contratantes
+    .slice()
     .sort((a, b) => (a.nome || '').localeCompare(b.nome || ''))
     .filter(c => !termo
       || semAcentos(c.nome).includes(termo)

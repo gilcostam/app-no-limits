@@ -224,6 +224,17 @@ function ligarListaClientes() {
     ordemWorkflow = e.target.value;
     renderizarListaClientes();
   });
+
+  /* Delegação na ficha, não no chip: a ficha é redesenhada a cada
+     troca de cliente, então listener preso no chip morreria junto. */
+  $('workflowClienteSelecionado')?.addEventListener('change', e => {
+    const input = e.target.closest('input[data-servico]');
+    if (!input || !clienteSelecionado) return;
+
+    Servicos.definir(clienteSelecionado.id, input.dataset.servico, input.checked);
+    input.closest('.servico-chip')?.classList.toggle('ativo', input.checked);
+    atualizarListasServicos();
+  });
 }
 
 function selecionarCliente(cliente) {
@@ -237,7 +248,29 @@ function mostrarClienteSelecionado(cliente) {
   const container = $('workflowClienteSelecionado');
   if (!container) return;
 
-  container.innerHTML = `<h2 class="cliente-info-nome">${escapar(cliente.nome)}</h2>`;
+  const ativos = Servicos.ler(cliente.id);
+
+  /* Só admin muda o que o cliente contratou. Funcionário vê para
+     saber por que um cliente não aparece na aba dele, mas quem define
+     escopo é quem fechou a venda. */
+  const podeEditar = ehAdmin();
+
+  const chips = SERVICOS.map(s => `
+    <label class="servico-chip${ativos[s.id] ? ' ativo' : ''}">
+      <input type="checkbox" data-servico="${s.id}"
+             ${ativos[s.id] ? 'checked' : ''}
+             ${podeEditar ? '' : 'disabled'}>
+      <span>${s.titulo}</span>
+    </label>
+  `).join('');
+
+  container.innerHTML = `
+    <h2 class="cliente-info-nome">${escapar(cliente.nome)}</h2>
+    <div class="servicos-cliente">
+      <span class="servicos-rotulo">${podeEditar ? 'Serviços contratados' : 'Serviços contratados (só admin altera)'}</span>
+      <div class="servicos-chips">${chips}</div>
+    </div>
+  `;
 }
 
 function mostrarChecklist(cliente) {

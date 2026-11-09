@@ -471,6 +471,72 @@ body:not(.liberado) main { display: none; }
   margin: 0;
 }
 
+/* ---------- serviços contratados ----------
+   A .cliente-info é flex em linha nos outros painéis. No Workflow o
+   nome e os serviços empilham, então só aqui vira coluna. */
+
+#workflowClienteSelecionado {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.servicos-cliente {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.servicos-rotulo {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--cinza);
+}
+
+.servicos-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.servico-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px 5px 10px;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 14px;
+  background: var(--branco);
+  font-size: 13px;
+  color: var(--cinza);
+  cursor: pointer;
+  user-select: none;
+  /* Sem isto "Google Meu Negócio" quebra em três linhas e os três chips
+     ficam com alturas diferentes. Eles quebram entre si, não por dentro. */
+  white-space: nowrap;
+  transition: border-color .12s, color .12s, background .12s;
+}
+
+.servico-chip:hover { border-color: #C9C9C9; }
+
+.servico-chip.ativo {
+  border-color: var(--vermelho);
+  background: #FDF2F3;
+  color: var(--preto);
+}
+
+.servico-chip input {
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--vermelho);
+}
+
+/* Funcionário enxerga o escopo, mas quem vendeu é que altera. */
+.servico-chip:has(input:disabled) { cursor: default; opacity: .7; }
+.servico-chip:has(input:disabled) input { cursor: default; }
+
 .workflow-checklist-container {
   padding: 24px;
   flex: 1;

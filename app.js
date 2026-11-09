@@ -84,7 +84,7 @@ const Store = {
 const Checklist = {
   cache: {},
 
-  prefixos: /^(workflow|gmb|dir|site)_/,
+  prefixos: /^(workflow|gmb|dir|site|servicos)_/,
 
   async carregar() {
     this.cache = {};
@@ -158,6 +158,62 @@ const Checklist = {
       .then(({ error }) => { if (error) avisarFalhaGravacao(error.message); });
   },
 };
+
+/* ---------- serviços contratados ----------
+
+   Nem todo cliente compra tudo. Um contrata só o Google Meu Negócio,
+   outro só o site. Sem isto as três abas de rotina listam os 66
+   clientes iguais, e a equipe perde tempo abrindo ficha de quem não
+   tem aquele serviço, ou pior, executa rotina que ninguém pagou.
+
+   Mora no mesmo `checklist_estado`, com a chave `servicos_<id>`.
+   Não precisou de coluna nova em `clientes`, e isso resolve de
+   quebra um problema de permissão: funcionário lê `clientes` pela
+   view `clientes_equipe`, que só entrega id e nome. Uma coluna de
+   serviço lá dentro ficaria invisível para a equipe.             */
+
+const SERVICOS = [
+  { id: 'gmb', titulo: 'Google Meu Negócio' },
+  { id: 'dir', titulo: 'Diretórios locais' },
+  { id: 'site', titulo: 'Site' },
+];
+
+const Servicos = {
+  /* Ausência de registro significa tudo ativo, e não tudo desativado.
+     Os clientes que já existiam não têm essa chave gravada: com o
+     padrão invertido, as três abas apareceriam vazias no primeiro
+     acesso depois desta mudança e pareceria que o app quebrou.
+     Assim o comportamento só muda onde alguém desmarcou de propósito. */
+  ler(clienteId) {
+    const salvo = Checklist.ler(`servicos_${clienteId}`);
+    const ativos = {};
+    SERVICOS.forEach(s => { ativos[s.id] = salvo[s.id] !== false; });
+    return ativos;
+  },
+
+  tem(clienteId, servico) {
+    return this.ler(clienteId)[servico];
+  },
+
+  definir(clienteId, servico, ativo) {
+    const atual = this.ler(clienteId);
+    atual[servico] = ativo;
+    atual.atualizado_em = new Date().toISOString();
+    Checklist.gravar(`servicos_${clienteId}`, atual);
+  },
+
+  comServico(servico) {
+    return (clientes || []).filter(c => this.tem(c.id, servico));
+  },
+};
+
+/* Redesenha as três laterais depois que um serviço é ligado ou
+   desligado, para o cliente aparecer ou sumir na hora. */
+function atualizarListasServicos() {
+  if (typeof renderizarListaClientesGmb === 'function') renderizarListaClientesGmb();
+  if (typeof renderizarListaClientesDir === 'function') renderizarListaClientesDir();
+  if (typeof renderizarListaClientesSite === 'function') renderizarListaClientesSite();
+}
 
 let timerFalhaSync = null;
 
