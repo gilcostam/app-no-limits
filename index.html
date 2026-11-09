@@ -34,15 +34,10 @@
     <span>Marketing Estratégico</span>
   </div>
   <nav class="abas">
-    <button class="aba ativa" data-aba="plano">Plano da semana</button>
-    <button class="aba so-admin" data-aba="contrato">Novo contrato</button>
-    <button class="aba so-admin" data-aba="clientes">Clientes</button>
-    <button class="aba so-admin" data-aba="importar">Importar</button>
-    <button class="aba so-admin" data-aba="historico">Histórico</button>
-    <button class="aba" data-aba="gmn">Google Meu Negócio</button>
-    <button class="aba" data-aba="conteudo">Conteúdo semanal</button>
-    <button class="aba" data-aba="seo">SEO e site</button>
-    <button class="aba" data-aba="relatorio">Relatório mensal</button>
+    <button class="aba ativa" data-aba="workflow">Workflow</button>
+    <button class="aba" data-aba="gmb">Google Meu Negócio</button>
+    <button class="aba" data-aba="dir">Diretórios locais</button>
+    <button class="aba" data-aba="site">Site</button>
   </nav>
   <span id="statusConexao" class="conexao"></span>
   <button id="btnSair" class="sair oculto">Sair</button>
@@ -50,494 +45,128 @@
 
 <main>
 
-<!-- ============ PLANO DA SEMANA ============ -->
-<section id="painel-plano" class="painel ativo">
+<!-- ============ WORKFLOW CHECKLIST ============ -->
+<section id="painel-workflow" class="painel ativo">
 
-  <div class="faixa-dias" id="diasPlano"></div>
-
-  <div class="cabecalho-lista">
-    <h2 id="tituloPlano"></h2>
-    <input type="search" id="buscaPlano" placeholder="Buscar por cliente">
-  </div>
-  <p class="nota" id="resumoPlano"></p>
-
-  <div id="listaPlano" class="lista"></div>
-  <p id="planoAviso" class="aviso"></p>
-
-  <div id="atrasadosPlano" class="atrasados oculto">
-    <div class="cabecalho-lista">
-      <h2 id="tituloAtrasados"></h2>
-    </div>
-    <div id="listaAtrasados" class="lista"></div>
-  </div>
-
-</section>
-
-<!-- ============ NOVO CONTRATO ============ -->
-<section id="painel-contrato" class="painel so-admin">
-
-  <div class="colunas">
-    <div class="coluna">
-
-      <fieldset>
-        <legend>Dados do contratante</legend>
-
-        <div class="campo">
-          <label for="clienteExistente">Carregar cliente já cadastrado</label>
-          <select id="clienteExistente">
-            <option value="">Novo cliente</option>
+  <div class="workflow-container">
+    <!-- Lista de clientes -->
+    <div class="workflow-clientes">
+      <div class="cabecalho-clientes">
+        <h2>Clientes</h2>
+        <button id="btnSincronizar" class="btn-sincronizar so-admin" title="Sincronizar clientes do Asaas">⟳</button>
+      </div>
+      <div class="busca-wrap">
+        <input type="search" id="buscaClientesWorkflow" class="busca-clientes" placeholder="Buscar cliente..." autocomplete="off">
+        <div class="filtros-situacao" id="filtrosSituacao">
+          <button type="button" class="filtro ativo" data-situacao="todos">Todos</button>
+          <button type="button" class="filtro" data-situacao="nao-iniciado">Não iniciados</button>
+          <button type="button" class="filtro" data-situacao="andamento">Em andamento</button>
+          <button type="button" class="filtro" data-situacao="completo">Concluídos</button>
+        </div>
+        <div class="ordenar-wrap">
+          <label for="ordemClientes">Ordenar</label>
+          <select id="ordemClientes">
+            <option value="nome">Nome (A-Z)</option>
+            <option value="parado">Parados há mais tempo</option>
           </select>
         </div>
-
-        <div class="linha">
-          <div class="campo">
-            <label for="tipoPessoa">Tipo</label>
-            <select id="tipoPessoa">
-              <option value="PF">Pessoa física</option>
-              <option value="PJ">Pessoa jurídica</option>
-            </select>
-          </div>
-          <div class="campo so-pf">
-            <label for="sexo">Tratamento</label>
-            <select id="sexo">
-              <option value="F">Feminino</option>
-              <option value="M">Masculino</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="campo">
-          <label for="nome"><span class="rotulo-pf">Nome completo</span><span class="rotulo-pj">Razão social</span></label>
-          <input type="text" id="nome" placeholder="Ex.: Larissa Camila dos Santos Gomes">
-        </div>
-
-        <div class="linha">
-          <div class="campo">
-            <label for="documento"><span class="rotulo-pf">CPF</span><span class="rotulo-pj">CNPJ</span></label>
-            <input type="text" id="documento" placeholder="000.000.000-00">
-          </div>
-          <div class="campo so-pf">
-            <label for="rg">RG <span class="opcional">opcional</span></label>
-            <input type="text" id="rg" placeholder="00.000.000-0">
-          </div>
-          <div class="campo so-pj">
-            <label for="responsavelLegal">Representante legal</label>
-            <input type="text" id="responsavelLegal" placeholder="Nome de quem assina">
-          </div>
-        </div>
-
-        <div class="campo">
-          <label for="endereco">Endereço</label>
-          <input type="text" id="endereco" placeholder="R. Antônio Carlos, 95 - Centro">
-        </div>
-
-        <div class="linha">
-          <div class="campo grande">
-            <label for="cidade">Cidade</label>
-            <input type="text" id="cidade" placeholder="Valinhos">
-          </div>
-          <div class="campo pequeno">
-            <label for="uf">UF</label>
-            <input type="text" id="uf" maxlength="2" placeholder="SP">
-          </div>
-          <div class="campo">
-            <label for="cep">CEP</label>
-            <input type="text" id="cep" placeholder="13270-005">
-          </div>
-        </div>
-
-        <div class="linha">
-          <div class="campo">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" placeholder="cliente@email.com">
-          </div>
-          <div class="campo">
-            <label for="telefone">Telefone</label>
-            <input type="text" id="telefone" placeholder="(19) 99970-1050">
-          </div>
-        </div>
-      </fieldset>
-
-    </div>
-
-    <div class="coluna">
-
-      <fieldset>
-        <legend>Contrato</legend>
-
-        <div class="campo">
-          <label for="modelo">Modelo</label>
-          <select id="modelo">
-            <option value="seo">SEO Local e GEO</option>
-            <option value="hospedagem">Hospedagem de site + blog</option>
-          </select>
-        </div>
-
-        <div class="campo so-seo">
-          <label for="planoBase">Plano base</label>
-          <select id="planoBase">
-            <option value="3">3 meses de fidelidade</option>
-            <option value="6">6 meses de fidelidade</option>
-            <option value="12" selected>12 meses de fidelidade</option>
-            <option value="mensal">Mensal, sem fidelidade</option>
-          </select>
-        </div>
-
-        <div class="campo">
-          <label for="valorBase"><span class="rotulo-seo">Mensalidade SEO/GEO</span><span class="rotulo-hosp">Mensalidade hospedagem + blog</span></label>
-          <div class="moeda">
-            <span>R$</span>
-            <input type="number" id="valorBase" step="10" min="0">
-          </div>
-        </div>
-
-        <div class="so-seo">
-          <div class="addon">
-            <label class="check">
-              <input type="checkbox" id="addonTrafego">
-              <span>Gestão de tráfego pago (Meta Ads)</span>
-            </label>
-            <div class="moeda">
-              <span>R$</span>
-              <input type="number" id="valorTrafego" step="10" min="0" value="600" disabled>
-            </div>
-          </div>
-
-          <div class="addon">
-            <label class="check">
-              <input type="checkbox" id="addonRedes">
-              <span>Gestão de redes sociais</span>
-            </label>
-            <div class="moeda">
-              <span>R$</span>
-              <input type="number" id="valorRedes" step="10" min="0" value="890" disabled>
-            </div>
-          </div>
-
-          <p class="nota">Os serviços adicionais são contratados sem fidelidade e podem ser encerrados isoladamente.</p>
-        </div>
-
-        <div class="linha">
-          <div class="campo">
-            <label for="diaVencimento">Dia do vencimento</label>
-            <input type="number" id="diaVencimento" min="1" max="28" value="10">
-          </div>
-          <div class="campo">
-            <label for="primeiroPagamento">Primeiro pagamento</label>
-            <input type="date" id="primeiroPagamento">
-          </div>
-        </div>
-
-        <div class="campo">
-          <label for="dataAssinatura">Data da assinatura</label>
-          <input type="date" id="dataAssinatura">
-        </div>
-
-        <div class="total">
-          <span>Total mensal</span>
-          <strong id="totalMensal">R$ 590,00</strong>
-        </div>
-        <p class="total-extenso" id="totalExtenso"></p>
-      </fieldset>
-
-      <div class="acoes">
-        <button id="btnVisualizar" class="secundario">Visualizar</button>
-        <button id="btnBaixar" class="primario">Baixar PDF para o Autentique</button>
       </div>
-      <p id="aviso" class="aviso"></p>
+      <div id="listaClientesWorkflow" class="lista-clientes"></div>
+      <p id="aviso-sincronizar" class="aviso-sync"></p>
+    </div>
 
+    <!-- Checklist do cliente selecionado -->
+    <div class="workflow-checklist">
+      <div id="workflowClienteSelecionado" class="cliente-info"></div>
+      <div id="workflowChecklist" class="workflow-checklist-container"></div>
     </div>
   </div>
 
 </section>
 
-<!-- ============ CLIENTES ============ -->
-<section id="painel-clientes" class="painel so-admin">
-  <div class="cabecalho-lista">
-    <h2>Clientes cadastrados</h2>
-    <input type="search" id="buscaCliente" placeholder="Buscar por nome ou documento">
-  </div>
-  <p class="nota">Clique em um cliente para corrigir os dados e definir quem cuida dele.</p>
+<!-- ============ ROTINA GOOGLE MEU NEGÓCIO ============ -->
+<section id="painel-gmb" class="painel">
 
-  <div id="edicaoCliente" class="edicao-cliente oculto">
-    <div class="cabecalho-lista">
-      <h3 id="tituloEdicao"></h3>
-      <button type="button" id="btnFecharEdicao" class="secundario">Fechar</button>
-    </div>
-
-    <div class="grade-edicao">
-      <label class="campo">
-        <span>Tipo de pessoa</span>
-        <select id="edTipoPessoa">
-          <option value="PF">Pessoa física</option>
-          <option value="PJ">Pessoa jurídica</option>
-        </select>
-      </label>
-      <label class="campo ed-pf">
-        <span>Sexo</span>
-        <select id="edSexo">
-          <option value="F">Feminino</option>
-          <option value="M">Masculino</option>
-        </select>
-      </label>
-      <label class="campo grande">
-        <span>Nome</span>
-        <input type="text" id="edNome">
-      </label>
-      <label class="campo">
-        <span>CPF ou CNPJ</span>
-        <input type="text" id="edDocumento">
-      </label>
-      <label class="campo ed-pf">
-        <span>RG</span>
-        <input type="text" id="edRg">
-      </label>
-      <label class="campo ed-pj oculto">
-        <span>Responsável legal</span>
-        <input type="text" id="edResponsavelLegal">
-      </label>
-      <label class="campo">
-        <span>E-mail</span>
-        <input type="email" id="edEmail">
-      </label>
-      <label class="campo">
-        <span>Telefone</span>
-        <input type="text" id="edTelefone">
-      </label>
-      <label class="campo grande">
-        <span>Endereço</span>
-        <input type="text" id="edEndereco">
-      </label>
-      <label class="campo">
-        <span>Cidade</span>
-        <input type="text" id="edCidade">
-      </label>
-      <label class="campo">
-        <span>Estado (UF)</span>
-        <input type="text" id="edUf" maxlength="2">
-      </label>
-      <label class="campo">
-        <span>CEP</span>
-        <input type="text" id="edCep">
-      </label>
-    </div>
-
-    <!-- O responsável não mora na ficha do cliente, mora no cartão do Google Meu
-         Negócio. Por isso ele só grava quando o cliente está na rotina. -->
-    <div class="rotina-edicao">
-      <label class="campo">
-        <span>Quem cuida deste cliente</span>
-        <select id="edResponsavel"></select>
-      </label>
-      <label class="check"><input type="checkbox" id="edNaRotina"><span>Na rotina da semana</span></label>
-      <p id="edRotinaNota" class="nota"></p>
-    </div>
-
-    <div class="acoes">
-      <button type="button" id="btnSalvarCliente" class="primario">Salvar alterações</button>
-    </div>
-    <p id="clienteAviso" class="aviso"></p>
-  </div>
-
-  <div id="listaClientes" class="lista"></div>
-</section>
-
-<!-- ============ IMPORTAR CLIENTES ============ -->
-<!-- Só admin: grava em "clientes", que guarda CPF e RG e é restrita a admin no banco.
-     Para funcionário a tela até apareceria, mas o banco recusaria a escrita. -->
-<section id="painel-importar" class="painel so-admin">
-  <div class="cabecalho-lista">
-    <h2>Importar clientes de uma planilha</h2>
-  </div>
-  <p class="nota">
-    Serve arquivo do Excel (.xlsx) ou .csv exportado de outro sistema. A primeira linha
-    precisa ser o cabeçalho com o nome das colunas. Nada é gravado antes de você conferir
-    a prévia e confirmar.
-  </p>
-
-  <!-- Fechado por padrão: quem já sabe o formato só quer escolher o arquivo, e a
-       tabela de referência aberta empurraria o campo do arquivo para fora da tela. -->
-  <details class="modelo-importar">
-    <summary>O que a planilha precisa ter</summary>
-
-    <p class="nota">
-      Estes são os nomes de coluna que o app reconhece sozinho. Se a planilha do outro
-      sistema usar outros nomes, tudo bem: ela é aceita do mesmo jeito e você ajusta a
-      correspondência na tela seguinte, antes de gravar.
-    </p>
-
-    <div class="rolagem-previa">
-      <table class="tabela-previa">
-        <thead>
-          <tr><th>Coluna</th><th>Precisa?</th><th>Exemplo</th></tr>
-        </thead>
-        <tbody id="corpoModelo"></tbody>
-      </table>
-    </div>
-
-    <p class="nota">
-      Só o nome é obrigatório, mas peça sempre o CPF ou CNPJ: é ele que impede o mesmo
-      cliente de entrar duas vezes e que liga a ficha ao contrato gerado aqui dentro.
-      Sem documento, dois clientes de mesmo nome viram um só. Uma linha por cliente,
-      não uma por cobrança.
-    </p>
-
-    <button type="button" id="btnModelo" class="secundario">Baixar modelo de planilha</button>
-  </details>
-
-  <label class="campo">
-    <span>Arquivo da planilha</span>
-    <input type="file" id="arquivoImportar" accept=".xlsx,.xls,.csv">
-  </label>
-
-  <div id="mapaImportar" class="mapa-importar oculto">
-    <h3>Confira o que cada coluna significa</h3>
-    <p class="nota">Deixe em branco o que a sua planilha não tem. Só o nome é obrigatório.</p>
-    <div id="camposImportar" class="grade-mapa"></div>
-  </div>
-
-  <div id="previaImportar" class="previa-importar oculto">
-    <h3 id="tituloPrevia"></h3>
-    <div class="rolagem-previa">
-      <table class="tabela-previa">
-        <thead id="cabecaPrevia"></thead>
-        <tbody id="corpoPrevia"></tbody>
-      </table>
-    </div>
-    <button type="button" id="btnImportar" class="primario">Importar</button>
-  </div>
-
-  <p id="importarAviso" class="aviso"></p>
-</section>
-
-<!-- ============ HISTÓRICO ============ -->
-<section id="painel-historico" class="painel so-admin">
-  <div class="cabecalho-lista">
-    <h2>Contratos gerados</h2>
-    <input type="search" id="buscaContrato" placeholder="Buscar por cliente">
-  </div>
-  <div id="listaContratos" class="lista"></div>
-</section>
-
-<!-- ============ GOOGLE MEU NEGÓCIO ============ -->
-<section id="painel-gmn" class="painel">
-
-  <fieldset>
-    <legend>Colocar cliente em onboarding</legend>
-    <div class="linha">
-      <div class="campo grande">
-        <label for="gmnCliente">Cliente</label>
-        <input type="text" id="gmnCliente" list="gmnClientes" placeholder="Nome do cliente" autocomplete="off">
-        <datalist id="gmnClientes"></datalist>
+  <div class="workflow-container">
+    <!-- Lista de clientes -->
+    <div class="workflow-clientes">
+      <div class="cabecalho-clientes">
+        <h2>Clientes</h2>
       </div>
-      <div class="campo">
-        <label for="gmnResponsavel">Responsável</label>
-        <select id="gmnResponsavel"></select>
+      <div class="busca-wrap">
+        <input type="search" id="buscaClientesGmb" class="busca-clientes" placeholder="Buscar cliente..." autocomplete="off">
       </div>
-      <div class="campo pequeno-data">
-        <label for="gmnDataInicio">Início</label>
-        <input type="date" id="gmnDataInicio">
+      <div id="listaClientesGmb" class="lista-clientes"></div>
+    </div>
+
+    <!-- Rotina do cliente selecionado -->
+    <div class="workflow-checklist">
+      <div class="gmb-cabecalho">
+        <div id="gmbClienteSelecionado" class="cliente-info"></div>
+        <div class="gmb-semana">
+          <button id="gmbSemanaAnterior" class="btn-semana" title="Semana anterior">‹</button>
+          <span id="gmbSemanaLabel" class="gmb-semana-label"></span>
+          <button id="gmbSemanaProxima" class="btn-semana" title="Semana seguinte">›</button>
+        </div>
       </div>
+      <div id="gmbRotina" class="workflow-checklist-container"></div>
     </div>
-    <div class="acoes">
-      <button id="btnNovoOnboarding" class="primario">Adicionar ao onboarding</button>
+  </div>
+
+</section>
+
+<!-- ============ DIRETÓRIOS LOCAIS ============ -->
+<section id="painel-dir" class="painel">
+
+  <div class="workflow-container">
+    <div class="workflow-clientes">
+      <div class="cabecalho-clientes">
+        <h2>Clientes</h2>
+      </div>
+      <div class="busca-wrap">
+        <input type="search" id="buscaClientesDir" class="busca-clientes" placeholder="Buscar cliente..." autocomplete="off">
+      </div>
+      <div id="listaClientesDir" class="lista-clientes"></div>
     </div>
-    <p id="gmnAviso" class="aviso"></p>
-  </fieldset>
 
-  <div class="cabecalho-lista">
-    <h2>Onboarding em andamento</h2>
-    <input type="search" id="buscaOnboarding" placeholder="Buscar por cliente">
-    <select id="filtroResponsavel" class="filtro">
-      <option value="">Todos os responsáveis</option>
-    </select>
-    <select id="filtroSituacao" class="filtro">
-      <option value="abertos">Em aberto</option>
-      <option value="concluidos">Concluídos</option>
-      <option value="pausados">Pausados</option>
-      <option value="">Todos</option>
-    </select>
+    <div class="workflow-checklist">
+      <div id="dirClienteSelecionado" class="cliente-info"></div>
+      <div id="dirConteudo" class="workflow-checklist-container"></div>
+    </div>
   </div>
-
-  <div id="listaOnboarding" class="lista"></div>
-
-  <fieldset class="so-admin equipe">
-    <legend>Equipe</legend>
-    <p class="nota">Quem entra pela primeira vez é criado como funcionário, com o começo do e-mail como nome. Ajuste aqui o nome e o nível de acesso. Funcionário enxerga só esta aba.</p>
-    <div id="listaEquipe" class="lista"></div>
-    <p id="equipeAviso" class="aviso"></p>
-  </fieldset>
 
 </section>
 
-<!-- ============ CONTEÚDO SEMANAL ============ -->
-<section id="painel-conteudo" class="painel">
+<!-- ============ ROTINA DO SITE ============ -->
+<section id="painel-site" class="painel">
 
-  <div class="cabecalho-lista">
-    <h2>Conteúdo semanal</h2>
-    <input type="month" id="conteudoMes" class="filtro" aria-label="Mês de referência">
-    <input type="search" id="buscaConteudo" placeholder="Buscar por cliente">
-    <select id="filtroResponsavelConteudo" class="filtro">
-      <option value="">Todos os responsáveis</option>
-    </select>
+  <div class="workflow-container">
+    <div class="workflow-clientes">
+      <div class="cabecalho-clientes">
+        <h2>Clientes</h2>
+      </div>
+      <div class="busca-wrap">
+        <input type="search" id="buscaClientesSite" class="busca-clientes" placeholder="Buscar cliente..." autocomplete="off">
+      </div>
+      <div id="listaClientesSite" class="lista-clientes"></div>
+    </div>
+
+    <div class="workflow-checklist">
+      <div id="siteClienteSelecionado" class="cliente-info"></div>
+      <div id="siteConteudo" class="workflow-checklist-container"></div>
+    </div>
   </div>
-
-  <div id="listaConteudo" class="lista"></div>
-  <p id="conteudoAviso" class="aviso"></p>
-
-</section>
-
-<!-- ============ SEO E SITE ============ -->
-<section id="painel-seo" class="painel">
-
-  <div class="cabecalho-lista">
-    <h2>SEO e site</h2>
-    <input type="search" id="buscaSeo" placeholder="Buscar por cliente">
-    <select id="filtroResponsavelSeo" class="filtro">
-      <option value="">Todos os responsáveis</option>
-    </select>
-  </div>
-
-  <div id="listaSeo" class="lista"></div>
-  <p id="seoAviso" class="aviso"></p>
-
-</section>
-
-<!-- ============ RELATÓRIO MENSAL ============ -->
-<section id="painel-relatorio" class="painel">
-
-  <div class="cabecalho-lista">
-    <h2>Relatório mensal</h2>
-    <input type="month" id="relatorioMes" class="filtro" aria-label="Mês de referência">
-    <input type="search" id="buscaRelatorio" placeholder="Buscar por cliente">
-    <select id="filtroResponsavelRelatorio" class="filtro">
-      <option value="">Todos os responsáveis</option>
-    </select>
-  </div>
-
-  <div id="listaRelatorio" class="lista"></div>
-  <p id="relatorioAviso" class="aviso"></p>
 
 </section>
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.10/build/pdfmake.min.js"></script>
-<script src="vfs-helvetica.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<!-- Lê .xlsx direto. Sem isto sobraria pedir "salve como CSV", e o Excel brasileiro
-     salva CSV com ponto e vírgula e acento quebrado, que é justamente onde a
-     importação estragaria os nomes. -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="contrato-texto.js"></script>
-<script src="contrato-pdf.js"></script>
-<script src="gmn.js"></script>
-<script src="gmn-conteudo.js"></script>
-<script src="gmn-seo.js"></script>
-<script src="gmn-relatorio.js"></script>
-<script src="gmn-site.js"></script>
-<script src="gmn-plano.js"></script>
-<script src="importar.js"></script>
+<script src="asaas-proxy.js"></script>
+<script src="workflow-checklist.js"></script>
+<script src="gmb-rotina.js"></script>
+<script src="diretorios.js"></script>
+<script src="site-rotina.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

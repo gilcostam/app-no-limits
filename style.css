@@ -48,6 +48,7 @@ body {
   color: var(--cinza);
   cursor: pointer;
 }
+.aba { color: #4A4A4A; font-weight: 500; }  /* o cinza claro quase sumia no branco */
 .aba:hover { background: var(--fundo); color: var(--preto); }
 .aba.ativa { background: var(--vermelho); color: var(--branco); }
 
@@ -55,96 +56,10 @@ body {
 
 /* ---------- painéis ---------- */
 
-main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+main { padding: 0; }
 
 .painel { display: none; }
 .painel.ativo { display: block; }
-
-.colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-
-fieldset {
-  background: var(--branco);
-  border: 1px solid var(--cinza-claro);
-  border-radius: 10px;
-  padding: 18px 20px 20px;
-  margin: 0 0 16px;
-}
-
-legend {
-  font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: .6px;
-  color: var(--vermelho);
-  padding: 0 6px;
-}
-
-/* ---------- campos ---------- */
-
-.campo { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; flex: 1; min-width: 0; }
-.linha { display: flex; gap: 12px; }
-.campo.pequeno { flex: 0 0 64px; }
-.campo.grande { flex: 2; }
-
-label { font-size: 12px; color: var(--cinza); font-weight: 500; }
-.opcional { font-weight: 400; opacity: .7; }
-
-input, select {
-  font-family: inherit;
-  font-size: 14px;
-  padding: 8px 10px;
-  border: 1px solid var(--cinza-claro);
-  border-radius: 6px;
-  background: var(--branco);
-  color: var(--preto);
-  width: 100%;
-}
-
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--vermelho);
-  box-shadow: 0 0 0 3px rgba(190, 30, 45, .12);
-}
-
-input:disabled { background: var(--fundo); color: var(--cinza); }
-
-.moeda { display: flex; align-items: center; gap: 8px; }
-.moeda span { color: var(--cinza); font-size: 13px; }
-
-/* ---------- add-ons ---------- */
-
-.addon {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 11px 12px;
-  border: 1px solid var(--cinza-claro);
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.addon .moeda { flex: 0 0 120px; }
-.check { display: flex; align-items: center; gap: 9px; flex: 1; cursor: pointer; font-size: 14px; color: var(--preto); }
-.check input { width: auto; accent-color: var(--vermelho); }
-
-.nota { font-size: 12px; color: var(--cinza); margin: 0 0 14px; line-height: 1.45; }
-
-/* ---------- total ---------- */
-
-.total {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding-top: 14px;
-  border-top: 1px solid var(--cinza-claro);
-}
-.total span { font-size: 13px; color: var(--cinza); }
-.total strong { font-size: 22px; color: var(--vermelho); }
-.total-extenso { font-size: 12px; color: var(--cinza); margin: 4px 0 0; font-style: italic; }
-
-/* ---------- ações ---------- */
-
-.acoes { display: flex; gap: 10px; }
 
 button.primario, button.secundario {
   font-family: inherit;
@@ -156,7 +71,7 @@ button.primario, button.secundario {
   border: 1px solid transparent;
 }
 
-button.primario { background: var(--vermelho); color: var(--branco); flex: 1; }
+button.primario { background: var(--vermelho); color: var(--branco); }
 button.primario:hover { background: var(--vermelho-escuro); }
 button.secundario { background: var(--branco); color: var(--preto); border-color: var(--cinza-claro); }
 button.secundario:hover { border-color: var(--cinza); }
@@ -164,227 +79,6 @@ button.secundario:hover { border-color: var(--cinza); }
 .aviso { font-size: 13px; margin: 12px 0 0; min-height: 18px; }
 .aviso.erro { color: var(--vermelho); }
 .aviso.ok { color: #1B7F3B; }
-
-/* ---------- listas ---------- */
-
-.cabecalho-lista { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.cabecalho-lista h2 { font-size: 17px; margin: 0; flex: 1; }
-.cabecalho-lista input { max-width: 300px; }
-
-.lista { display: flex; flex-direction: column; gap: 8px; }
-
-.item-lista {
-  background: var(--branco);
-  border: 1px solid var(--cinza-claro);
-  border-radius: 8px;
-  padding: 13px 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.item-lista .info { flex: 1; min-width: 0; }
-.item-lista .info strong { display: block; font-size: 14px; margin-bottom: 3px; }
-.item-lista .info span { font-size: 12px; color: var(--cinza); }
-
-.etiqueta {
-  font-size: 11px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  background: var(--fundo);
-  color: var(--cinza);
-  white-space: nowrap;
-}
-.etiqueta.destaque { background: rgba(190, 30, 45, .1); color: var(--vermelho); }
-
-.vazio { color: var(--cinza); font-size: 14px; padding: 24px; text-align: center; }
-
-/* ---------- google meu negócio ---------- */
-
-.cabecalho-lista .filtro { max-width: 190px; flex: 0 0 auto; }
-.campo.pequeno-data { flex: 0 0 150px; }
-
-.cartao-onboarding {
-  background: var(--branco);
-  border: 1px solid var(--cinza-claro);
-  border-radius: 8px;
-  padding: 14px 16px;
-}
-
-.topo-cartao { display: flex; align-items: center; gap: 16px; }
-.topo-cartao .info { flex: 1; min-width: 0; }
-.topo-cartao .info strong { display: block; font-size: 14px; margin-bottom: 3px; }
-.topo-cartao .info span { font-size: 12px; color: var(--cinza); }
-
-.etapas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-
-.etapa {
-  font-family: inherit;
-  font-size: 12px;
-  padding: 6px 11px;
-  border-radius: 20px;
-  cursor: pointer;
-  border: 1px solid var(--cinza-claro);
-  background: var(--branco);
-  color: var(--cinza);
-}
-.etapa:hover { border-color: var(--cinza); }
-.etapa.andamento { background: #FDF3E0; border-color: #E8C88A; color: #8A5D00; }
-.etapa.concluido { background: #E8F5EC; border-color: #9CCFAE; color: #1B7F3B; }
-.etapa.na { opacity: .55; text-decoration: line-through; }
-
-/* conteúdo semanal: as quatro semanas viram linhas dentro do mesmo cartão */
-.semana { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-.semana .rotulo-semana { font-size: 12px; color: var(--cinza); flex: 0 0 74px; }
-.semana .etapas { margin-top: 0; flex: 1; }
-.semana.atual .rotulo-semana { color: var(--vermelho); font-weight: 600; }
-
-/* seo: o site ganhou bloco próprio porque virou um checklist do tamanho do de SEO,
-   e sem a linha separando os dois viravam catorze pastilhas soltas no mesmo cartão */
-.bloco-site { margin-top: 14px; border-top: 1px solid var(--cinza-claro); padding-top: 12px; }
-
-.titulo-bloco { display: flex; align-items: center; gap: 10px; }
-.titulo-bloco > span:first-child { font-size: 12px; font-weight: 600; color: var(--cinza); text-transform: uppercase; letter-spacing: .5px; }
-.titulo-bloco .status-site { flex: 1; font-size: 12px; color: var(--preto); }
-
-.proximo-passo { font-size: 12px; color: var(--vermelho); margin: 10px 0 0; }
-
-/* seo: o status do site e o link ficam na mesma linha, abaixo das pastilhas */
-.linha-site { display: flex; align-items: flex-end; gap: 10px; margin-top: 12px; }
-.linha-site .campo { margin-bottom: 0; }
-.campo.pequeno-site { flex: 0 0 170px; }
-.abrir-site {
-  flex: 0 0 34px;
-  font-size: 12px;
-  color: var(--vermelho);
-  padding-bottom: 10px;
-  text-decoration: none;
-}
-.abrir-site:hover { text-decoration: underline; }
-/* invisível em vez de removido: assim o campo de link não estica e os cartões
-   continuam com a mesma largura, com link e sem link */
-.abrir-site.sem-link { visibility: hidden; }
-
-.extras { margin-top: 12px; border-top: 1px solid var(--cinza-claro); padding-top: 10px; }
-.extras summary { font-size: 12px; color: var(--cinza); cursor: pointer; }
-.extras .campo { margin-top: 10px; margin-bottom: 0; }
-
-/* ---------- plano da semana ---------- */
-
-/* Os cinco dias são a tela inteira em miniatura: cada um diz o que se faz nele e
-   quantos clientes já estão prontos, então dá para escolher onde trabalhar sem
-   abrir dia por dia. */
-.faixa-dias { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
-
-.dia {
-  font-family: inherit;
-  text-align: left;
-  cursor: pointer;
-  background: var(--branco);
-  border: 1px solid var(--cinza-claro);
-  border-radius: 8px;
-  padding: 11px 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.dia:hover { border-color: var(--cinza); }
-.dia strong { font-size: 13px; color: var(--preto); }
-.dia .tarefa-do-dia { font-size: 11px; color: var(--cinza); line-height: 1.3; }
-/* margin-top: auto empurra o placar para o rodapé do cartão. Sem isso, "Diretórios,
-   terminar e enviar os relatórios" quebra em duas linhas, só o placar da sexta desce,
-   e os cinco números deixam de ficar na mesma altura. */
-.dia .placar { font-size: 11px; color: var(--cinza); margin-top: auto; padding-top: 4px; }
-
-/* Hoje ganha a borda, o dia escolhido ganha o fundo: são perguntas diferentes
-   ("que dia é hoje" e "que dia estou olhando") e precisam sobreviver juntas. */
-.dia.hoje { border-color: var(--vermelho); }
-.dia.escolhido { background: var(--vermelho); border-color: var(--vermelho); }
-.dia.escolhido strong, .dia.escolhido .tarefa-do-dia, .dia.escolhido .placar { color: var(--branco); }
-.dia.escolhido .tarefa-do-dia, .dia.escolhido .placar { opacity: .85; }
-.dia.pronto:not(.escolhido) .placar { color: #1B7F3B; font-weight: 600; }
-
-.item-plano .etapas { margin-top: 0; flex: 0 0 auto; justify-content: flex-end; }
-/* Quem já está pronto continua na lista para poder ser desmarcado, mas apagado:
-   a lista existe para mostrar o que falta. */
-.item-plano.resolvido { opacity: .55; }
-.item-plano.resolvido:hover { opacity: 1; }
-
-/* O termo da semana fica junto do nome do cliente, e não como mais uma pastilha na
-   direita, porque ele não é uma tarefa para marcar: é o assunto do cliente naquela
-   semana, a informação em cima da qual as pastilhas do site fazem sentido. */
-.item-plano .termo-semana {
-  display: block;
-  max-width: 280px;
-  margin-top: 6px;
-  font-size: 12px;
-  padding: 5px 9px;
-}
-
-.item-plano .termo-eco { display: block; margin-top: 4px; }
-/* Termo em falta em vermelho: a segunda-feira deixou de entregar o que a terça
-   precisa, e isso não pode passar despercebido só porque as pastilhas do dia
-   anterior ficaram verdes. */
-.item-plano .termo-eco.faltando { color: var(--vermelho); }
-
-.atrasados { margin-top: 28px; border-top: 1px solid var(--cinza-claro); padding-top: 20px; }
-.atrasados h2 { color: var(--vermelho); }
-
-/* ---------- editar cliente ---------- */
-
-/* A linha inteira é o alvo do clique, não um lápis de 16px no canto: a lista é
-   feita para ser varrida no celular, onde mira pequena erra. */
-.item-lista.clicavel { cursor: pointer; }
-.item-lista.clicavel:hover { border-color: var(--cinza); }
-.item-lista.clicavel:focus-visible { outline: 2px solid var(--vermelho); outline-offset: 2px; }
-
-.edicao-cliente { border: 1px solid var(--cinza-claro); border-radius: 10px; padding: 18px; margin-bottom: 18px; background: var(--fundo); }
-.edicao-cliente h3 { font-size: 15px; margin: 0; }
-.grade-edicao { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; margin-top: 14px; }
-/* Nome e endereço ocupam a linha toda: são os dois que não cabem em um terço. */
-.grade-edicao .grande { grid-column: 1 / -1; }
-
-/* O bloco da rotina fica separado por uma linha porque ele não grava na ficha do
-   cliente, grava no cartão do Google Meu Negócio. São dois destinos diferentes
-   saindo do mesmo botão, e o desenho tem que deixar isso visível. */
-.rotina-edicao { margin-top: 6px; border-top: 1px solid var(--cinza-claro); padding-top: 14px; }
-.rotina-edicao .campo { max-width: 320px; }
-.rotina-edicao .nota { margin: 6px 0 0; }
-.edicao-cliente .acoes { margin-top: 16px; }
-.edicao-cliente .acoes button { flex: 0 0 auto; }
-
-/* ---------- importar clientes ---------- */
-
-.mapa-importar, .previa-importar { margin-top: 24px; border-top: 1px solid var(--cinza-claro); padding-top: 18px; }
-.mapa-importar h3, .previa-importar h3 { font-size: 14px; margin: 0 0 4px; }
-
-/* Duas colunas para os oito campos caberem sem rolagem: a correspondência precisa
-   ser conferida de uma olhada, senão ninguém confere. */
-.grade-mapa { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; margin-top: 14px; }
-
-/* A planilha manda na largura, não o app: com muitas colunas a tabela rola dentro
-   da caixa em vez de esticar a página inteira. */
-.rolagem-previa { overflow-x: auto; margin: 14px 0 16px; border: 1px solid var(--cinza-claro); border-radius: 8px; }
-.tabela-previa { border-collapse: collapse; width: 100%; font-size: 12px; }
-.tabela-previa th, .tabela-previa td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--cinza-claro); white-space: nowrap; }
-.tabela-previa th { background: var(--fundo); font-weight: 600; color: var(--cinza); }
-.tabela-previa tr:last-child td { border-bottom: 0; }
-.previa-novo { color: #1B7F3B; font-weight: 600; }
-.previa-repetido { color: var(--cinza); }
-
-/* O modelo vem recolhido porque é referência, não etapa: serve na primeira vez e
-   some depois. Aberto por padrão, empurraria o campo do arquivo para baixo da dobra
-   justamente para quem já sabe o que fazer. */
-.modelo-importar { margin: 16px 0 20px; border: 1px solid var(--cinza-claro); border-radius: 8px; padding: 12px 16px; }
-.modelo-importar summary { font-size: 13px; font-weight: 600; cursor: pointer; }
-.modelo-importar[open] summary { margin-bottom: 12px; }
-.modelo-importar .rolagem-previa { margin: 12px 0; }
-
-/* na equipe cada linha é um formulário, então os campos não empilham */
-.equipe { margin-top: 22px; }
-.equipe .item-lista { padding: 10px 14px; }
-.equipe .campo { margin-bottom: 0; }
-.equipe .check { flex: 0 0 auto; }
 
 /* ---------- login ---------- */
 
@@ -409,6 +103,29 @@ button.secundario:hover { border-color: var(--cinza); }
 }
 
 .cartao-login .marca { margin-bottom: 18px; }
+
+.campo { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; }
+/* regra restrita ao formulário: antes ela vazava para os rótulos do
+   checklist e deixava o título menor que a própria descrição */
+.campo label { font-size: 12px; color: var(--cinza); font-weight: 500; }
+
+input, select {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 6px;
+  background: var(--branco);
+  color: var(--preto);
+  width: 100%;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--vermelho);
+  box-shadow: 0 0 0 3px rgba(190, 30, 45, .12);
+}
+
 .cartao-login button { width: 100%; margin-top: 4px; }
 
 .sair {
@@ -431,46 +148,531 @@ body:not(.liberado) main { display: none; }
 
 .oculto { display: none !important; }
 
+/* ============ WORKFLOW CHECKLIST ============ */
+
+.workflow-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 60px);
+}
+
+.workflow-clientes {
+  border-right: 1px solid var(--cinza-claro);
+  overflow-y: auto;
+}
+
+.cabecalho-clientes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--cinza-claro);
+}
+
+.workflow-clientes h2 {
+  margin: 0;
+  font-size: 18px;
+  flex: 1;
+}
+
+.btn-sincronizar {
+  background: none;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--cinza);
+  transition: all 0.2s;
+}
+
+.btn-sincronizar:hover {
+  border-color: var(--cinza);
+  color: var(--preto);
+}
+
+.btn-sincronizar.sincronizando {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.aviso-sync {
+  padding: 12px 24px;
+  font-size: 12px;
+  margin: 0;
+}
+
+.aviso-sync.ok { color: #1B7F3B; }
+.aviso-sync.erro { color: var(--vermelho); }
+
+.lista-clientes {
+  display: flex;
+  flex-direction: column;
+}
+
+.cliente-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--cinza-claro);
+  transition: background 0.2s;
+}
+
+.cliente-item:hover {
+  background: var(--fundo);
+}
+
+.cliente-item.ativo {
+  background: var(--vermelho);
+  color: white;
+  border-bottom-color: var(--vermelho-escuro);
+}
+
+.cliente-item-conteudo {
+  flex: 1;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.cliente-item-nome {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.cliente-item-desc {
+  font-size: 13px;
+  color: var(--cinza);
+}
+
+.cliente-item.ativo .cliente-item-desc {
+  color: rgba(255,255,255,0.8);
+}
+
+/* ---------- busca na lateral ---------- */
+
+.busca-wrap {
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--cinza-claro);
+}
+
+.busca-clientes {
+  font-size: 13px;
+  padding: 7px 10px;
+}
+
+/* ---------- filtros por situação ---------- */
+
+.filtros-situacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.filtro {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--cinza-claro);
+  background: var(--branco);
+  color: var(--cinza);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filtro:hover { border-color: var(--cinza); color: var(--preto); }
+
+.filtro.ativo {
+  background: var(--preto);
+  border-color: var(--preto);
+  color: var(--branco);
+}
+
+/* ---------- ordenação ---------- */
+
+.ordenar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ordenar-wrap label {
+  font-size: 11px;
+  color: var(--cinza);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.ordenar-wrap select {
+  font-size: 12px;
+  padding: 4px 6px;
+}
+
+.lista-vazia {
+  color: var(--cinza);
+  justify-content: flex-start;
+}
+
+/* ---------- progresso do cliente ---------- */
+
+.cliente-item-progresso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.barra-progresso {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--cinza-claro);
+  overflow: hidden;
+  min-width: 40px;
+}
+
+.barra-progresso i {
+  display: block;
+  height: 100%;
+  background: var(--vermelho);
+  border-radius: 2px;
+  transition: width .25s;
+}
+
+.progresso-texto {
+  font-size: 11px;
+  color: var(--cinza);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.progresso-texto.completo { color: #1B7F3B; font-weight: 600; }
+
+/* resumo dos outros ciclos, linha de baixo */
+.ciclos-resumo {
+  display: flex;
+  gap: 10px;
+  margin-top: 3px;
+}
+
+.ciclo-mini {
+  font-size: 11px;
+  color: var(--cinza);
+  font-variant-numeric: tabular-nums;
+}
+
+.ciclo-mini.completo { color: #1B7F3B; font-weight: 600; }
+
+.cliente-item.ativo .ciclo-mini,
+.cliente-item.ativo .ciclo-mini.completo,
+.cliente-item.ativo .progresso-texto.completo { color: rgba(255,255,255,0.9); }
+
+/* nota explicativa abaixo do título do bloco */
+.bloco-nota {
+  font-size: 12px;
+  color: var(--cinza);
+  margin: 8px 0 4px;
+}
+
+.progresso-parado {
+  font-size: 11px;
+  color: var(--cinza);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.progresso-parado::before { content: '· '; }
+
+/* duas semanas sem mexer já é sinal de alerta */
+.progresso-parado.alerta { color: var(--vermelho); font-weight: 600; }
+
+.cliente-item.ativo .progresso-parado,
+.cliente-item.ativo .progresso-parado.alerta { color: rgba(255,255,255,0.9); }
+
+.cliente-item.situacao-completo .barra-progresso i { background: #1B7F3B; }
+.cliente-item.situacao-completo .progresso-texto { color: #1B7F3B; font-weight: 600; }
+
+.cliente-item.ativo .barra-progresso { background: rgba(255,255,255,0.35); }
+.cliente-item.ativo .barra-progresso i { background: var(--branco); }
+.cliente-item.ativo .progresso-texto { color: rgba(255,255,255,0.9); }
+
+/* ---------- botão de remover ---------- */
+
+.cliente-item-deletar {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--cinza);
+  font-size: 24px;
+  font-weight: 300;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: opacity .15s, background .2s, color .2s;
+  opacity: 0;              /* some até passar o mouse, tira ruído da lista */
+}
+
+.cliente-item:hover .cliente-item-deletar,
+.cliente-item-deletar:focus-visible { opacity: 1; }
+
+.cliente-item-deletar:hover {
+  background: rgba(0,0,0,0.1);
+  color: var(--vermelho);
+}
+
+.cliente-item.ativo .cliente-item-deletar:hover {
+  background: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+}
+
+.workflow-checklist {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.cliente-info {
+  padding: 24px;
+  border-bottom: 1px solid var(--cinza-claro);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  max-width: 780px;   /* alinhado com a largura do conteúdo */
+  width: 100%;
+}
+
+.cliente-info-empty {
+  color: var(--cinza);
+  font-size: 14px;
+}
+
+.cliente-info-nome {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.workflow-checklist-container {
+  padding: 24px;
+  flex: 1;
+  max-width: 780px;   /* linha curta: em tela grande o texto ia de ponta a ponta */
+  width: 100%;
+}
+
+.item-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--cinza-claro);
+}
+
+.item-check:last-child { border-bottom: none; }
+
+.item-check input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--vermelho);
+  flex-shrink: 0;
+}
+
+.item-check label {
+  flex: 1;
+  cursor: pointer;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--preto);
+  line-height: 1.35;
+}
+
+/* o risco cai só no título, não no carimbo de data nem na descrição */
+.item-check input[type="checkbox"]:checked + label .item-titulo {
+  text-decoration: line-through;
+  color: var(--cinza);
+}
+
+.item-check .descricao {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--cinza);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.item-check input[type="checkbox"]:checked + label .descricao {
+  text-decoration: none;
+  opacity: .55;
+}
+
+/* ============ ROTINA GOOGLE MEU NEGÓCIO ============ */
+
+.gmb-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--cinza-claro);
+  max-width: 780px;
+  width: 100%;
+}
+
+.gmb-cabecalho .cliente-info {
+  flex: 1;
+  border-bottom: none;
+  max-width: none;
+}
+
+.gmb-semana {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 24px;
+  flex-shrink: 0;
+}
+
+.gmb-semana-label {
+  font-size: 13px;
+  color: var(--cinza);
+  min-width: 150px;
+  text-align: center;
+}
+
+.btn-semana {
+  background: none;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--cinza);
+  cursor: pointer;
+}
+
+.btn-semana:hover { border-color: var(--cinza); color: var(--preto); }
+
+.gmb-bloco { margin-bottom: 32px; }
+.gmb-bloco:last-child { margin-bottom: 0; }
+
+.gmb-bloco-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--cinza-claro);
+}
+
+.gmb-bloco-cabecalho h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--cinza);
+}
+
+.gmb-contador {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cinza);
+  background: var(--fundo);
+  border-radius: 10px;
+  padding: 2px 9px;
+}
+
+.gmb-contador.completo { background: #E3F3E8; color: #1B7F3B; }
+
+/* ---------- fases do workflow ---------- */
+
+.fase-completa .gmb-bloco-cabecalho h3 { color: #1B7F3B; }
+.fase-completa .gmb-bloco-cabecalho { border-bottom-color: #CBE6D4; }
+
+.item-titulo { display: inline; }
+
+.item-data {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1B7F3B;
+  background: #E3F3E8;
+  border-radius: 10px;
+  padding: 1px 7px;
+  vertical-align: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.conexao.erro-sync {
+  color: #A3341F;
+  font-weight: 600;
+}
+
+/* ---------- rotina do site ---------- */
+
+.item-critico {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: #A3341F;
+  background: #FBE7E2;
+  border-radius: 10px;
+  padding: 1px 7px;
+  vertical-align: 1px;
+}
+
+.site-ciclo-aviso {
+  margin: 22px 0 -6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cinza);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.site-ciclo-aviso:first-child { margin-top: 0; }
+
 /* ---------- telas estreitas ---------- */
-/* fica no fim do arquivo de propósito: são ajustes que precisam vencer as regras
-   de coluna, campo e lista definidas acima */
 
 @media (max-width: 900px) {
-  .colunas { grid-template-columns: 1fr; }
-  .topo { flex-wrap: wrap; height: auto; padding: 12px 16px; gap: 12px; }
-  main { padding: 16px; }
+  .workflow-container {
+    grid-template-columns: 1fr;
+  }
 
-  /* com seis abas a barra passava da largura do celular e a última, "SEO e site",
-     ficava fora da tela sem jeito de chegar nela */
+  .workflow-clientes {
+    border-right: none;
+    border-bottom: 1px solid var(--cinza-claro);
+    max-height: 200px;
+  }
+
+  .gmb-cabecalho { flex-wrap: wrap; }
+  .gmb-semana { padding: 0 24px 16px; }
+
+  .topo { flex-wrap: wrap; height: auto; padding: 12px 16px; gap: 12px; }
   .abas { flex-wrap: wrap; gap: 2px; }
   .aba { padding: 8px 10px; }
-
-  /* sem isto os campos lado a lado se espremem em vez de descer uma linha */
-  .linha, .linha-site { flex-wrap: wrap; }
-  .campo, .campo.grande, .campo.pequeno-data, .campo.pequeno-site { flex: 1 1 170px; }
-
-  .cabecalho-lista { flex-wrap: wrap; }
-  .cabecalho-lista h2 { flex: 1 1 100%; }
-  .cabecalho-lista input, .cabecalho-lista .filtro { max-width: none; flex: 1 1 150px; }
-
-  /* cinco dias lado a lado no celular dariam 70px cada e a frase da tarefa sairia
-     quebrada letra a letra; empilhados viram uma agenda da semana */
-  .faixa-dias { grid-template-columns: 1fr; gap: 6px; }
-  .dia { flex-direction: row; align-items: baseline; gap: 8px; }
-  .dia strong { flex: 0 0 62px; }
-  .dia .tarefa-do-dia { flex: 1; }
-  .dia .placar { margin-top: 0; }
-
-  /* no cartão do plano as pastilhas precisam descer, senão espremem o nome */
-  .item-plano { flex-wrap: wrap; }
-  .item-plano .info { flex: 1 1 100%; }
-  .item-plano .etapas { flex: 1 1 100%; justify-content: flex-start; margin-top: 8px; }
-
-  /* duas colunas de correspondência no celular deixariam o select com 150px e o
-     nome da coluna da planilha cortado, que é justamente o que precisa ser lido */
-  .grade-mapa { grid-template-columns: 1fr; }
-
-  /* três colunas de ficha no celular dariam 110px por campo, e CPF não cabe em
-     110px sem o começo do número sumir enquanto se digita */
-  .grade-edicao { grid-template-columns: 1fr; }
 }

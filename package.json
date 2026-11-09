@@ -1,0 +1,21 @@
+{
+  "name": "no-limits-app",
+  "version": "1.0.0",
+  "description": "App de workflow checklist com integração Asaas",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "workflow",
+    "checklist",
+    "asaas"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  }
+}
