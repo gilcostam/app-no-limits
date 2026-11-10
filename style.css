@@ -592,6 +592,32 @@ body:not(.liberado) main { display: none; }
   opacity: .55;
 }
 
+/* Botão de copiar o pedido pronto para o Claude. Fica fora do <label>,
+   senão o clique nele marcaria a tarefa como feita sem ninguém ter feito. */
+.copiar-prompt {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 6px 12px;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 6px;
+  background: var(--branco);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cinza);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color .12s, color .12s, background .12s;
+}
+
+.copiar-prompt:hover {
+  border-color: var(--vermelho);
+  color: var(--vermelho);
+  background: #FDF2F3;
+}
+
+.copiar-prompt:active { transform: translateY(1px); }
+
 /* ============ ROTINA GOOGLE MEU NEGÓCIO ============ */
 
 .gmb-cabecalho {

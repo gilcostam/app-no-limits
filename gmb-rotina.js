@@ -20,6 +20,21 @@ const GMB_ACOES = [
     desc: 'Usuários e o próprio Google alteram horário, telefone e endereço sem avisar. Reverter o que estiver errado.' },
   { ciclo: 'semanal', id: 'saude_perfil', label: 'Conferir saúde do perfil',
     desc: 'Ver se não há aviso de suspensão, pendência de verificação ou post reprovado.' },
+  { ciclo: 'semanal', id: 'claude_analise', label: 'Análise do perfil e da concorrência com o Claude',
+    desc: 'Abrir o perfil do cliente numa aba, chamar o Claude pela extensão do navegador e pedir a comparação com os concorrentes. O botão ao lado copia o pedido pronto.',
+    prompt: `Analise o perfil do Google Meu Negócio de {cliente}, que está aberto nesta aba, e compare com os 3 primeiros concorrentes que aparecem na busca local da mesma categoria e cidade.
+
+Me responda em lista curta:
+1. Categoria principal e secundárias: a dele está certa? Quais os concorrentes usam?
+2. Avaliações: quantidade e nota dele contra a deles, e quantas entraram nos últimos 30 dias.
+3. Fotos: quantidade e data da última. Que tipo de foto está faltando.
+4. Posts: com que frequência ele publica contra a frequência deles.
+5. Descrição, produtos, serviços e atributos: o que está vazio, curto ou genérico.
+6. O que os concorrentes têm no perfil que ele não tem.
+
+No fim, me entregue as 3 mudanças que mais mudam posição, em ordem de impacto, já com o texto pronto para colar.
+
+Não altere nada no perfil por conta própria. Nome, endereço, telefone e categoria eu mesma altero, porque edição errada nesses campos derruba ou suspende o perfil.` },
 
   /* ---------- todo mês ---------- */
   { ciclo: 'mensal', id: 'categorias', label: 'Categoria principal e secundárias',
@@ -281,11 +296,48 @@ function renderizarRotinaGmb() {
 
       div.appendChild(input);
       div.appendChild(lab);
+
+      /* Ação que depende de um texto longo ganha botão de copiar. Decorar
+         o pedido não funciona: cada um pede de um jeito e a resposta do
+         Claude vem diferente, aí não dá para comparar semana com semana. */
+      if (acao.prompt) div.appendChild(botaoCopiarPrompt(acao.prompt));
+
       bloco.appendChild(div);
     });
 
     container.appendChild(bloco);
   });
+}
+
+/* O nome do cliente entra no texto para o pedido já sair pronto, sem
+   ninguém precisar editar antes de colar no Claude. */
+function botaoCopiarPrompt(modelo) {
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'copiar-prompt';
+  botao.textContent = 'Copiar pedido';
+  botao.title = 'Copia o texto para colar no Claude';
+
+  botao.addEventListener('click', async () => {
+    const texto = modelo.replace('{cliente}', gmbCliente ? gmbCliente.nome : 'o cliente');
+    try {
+      await navigator.clipboard.writeText(texto);
+      botao.textContent = 'Copiado';
+    } catch {
+      /* Navegador antigo ou permissão negada: em vez de falhar calado,
+         deixa o texto selecionado para o Ctrl+C manual. */
+      const area = document.createElement('textarea');
+      area.value = texto;
+      area.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(area);
+      area.select();
+      botao.textContent = document.execCommand('copy') ? 'Copiado' : 'Copie com Ctrl+C';
+      area.remove();
+    }
+    setTimeout(() => { botao.textContent = 'Copiar pedido'; }, 2000);
+  });
+
+  return botao;
 }
 
 function marcarAcaoGmb(ciclo, acaoId, marcado) {
