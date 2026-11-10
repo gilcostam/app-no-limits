@@ -280,6 +280,7 @@ function mostrarChecklist(cliente) {
   clienteWorkflow = lerEstado(cliente.id);
   const datas = clienteWorkflow._datas || {};
   container.innerHTML = '';
+  container.appendChild(barraMarcarTudo(cliente));
 
   FASES.forEach(fase => {
     const itens = CHECKLIST_ITEMS.filter(i => i.fase === fase.id);
@@ -339,6 +340,66 @@ function mostrarChecklist(cliente) {
 
     container.appendChild(bloco);
   });
+}
+
+/* ---------- marcar tudo ----------
+
+   Cliente que já estava rodando antes do app existir chega com o
+   checklist inteiro feito, e marcar 14 caixas uma a uma trava a
+   equipe logo na entrada do cliente. O botão alterna: se falta
+   alguma, marca tudo; se está tudo marcado, desmarca. */
+
+function barraMarcarTudo(cliente) {
+  const total = CHECKLIST_ITEMS.length;
+  const feitas = CHECKLIST_ITEMS.filter(i => clienteWorkflow[i.id] === true).length;
+  const tudoFeito = feitas === total;
+
+  const barra = document.createElement('div');
+  barra.className = 'workflow-acoes';
+
+  const resumo = document.createElement('span');
+  resumo.className = 'workflow-acoes-resumo';
+  resumo.textContent = `${feitas} de ${total} concluídas`;
+
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'botao-marcar-tudo';
+  botao.textContent = tudoFeito ? 'Desmarcar tudo' : 'Marcar tudo';
+  botao.addEventListener('click', () => marcarTudoWorkflow(cliente, !tudoFeito));
+
+  barra.appendChild(resumo);
+  barra.appendChild(botao);
+  return barra;
+}
+
+function marcarTudoWorkflow(cliente, marcado) {
+  /* Desmarcar apaga também a data de cada item, que é o histórico de
+     quando a etapa foi feita. Isso não volta, então pergunta antes.
+     Marcar não pergunta: o estrago é só uma caixa a mais marcada. */
+  if (!marcado && !confirm(
+    `Desmarcar as ${CHECKLIST_ITEMS.length} etapas de "${cliente.nome}"?\n\n` +
+    'As datas de conclusão serão apagadas e não há como recuperar.')) return;
+
+  const agora = new Date().toISOString();
+  if (!clienteWorkflow._datas) clienteWorkflow._datas = {};
+
+  CHECKLIST_ITEMS.forEach(item => {
+    clienteWorkflow[item.id] = marcado;
+    /* Data só entra em item que estava em branco. Quem já tinha carimbo
+       mantém o dia real em que foi feito, não o dia do clique no botão. */
+    if (marcado) {
+      if (!clienteWorkflow._datas[item.id]) clienteWorkflow._datas[item.id] = agora;
+    } else {
+      delete clienteWorkflow._datas[item.id];
+    }
+  });
+
+  /* Uma gravação só, e não uma por item: são 14 idas ao Supabase
+     para uma ação que o usuário enxerga como única. */
+  Checklist.gravar(`workflow_${cliente.id}`, clienteWorkflow);
+
+  mostrarChecklist(cliente);
+  renderizarListaClientes();
 }
 
 function marcarItem(clienteId, itemId, marcado) {

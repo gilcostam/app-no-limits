@@ -592,6 +592,43 @@ body:not(.liberado) main { display: none; }
   opacity: .55;
 }
 
+/* ---------- barra de marcar tudo (Workflow) ---------- */
+
+.workflow-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.workflow-acoes-resumo {
+  font-size: 13px;
+  color: var(--cinza);
+}
+
+.botao-marcar-tudo {
+  padding: 7px 14px;
+  border: 1px solid var(--cinza-claro);
+  border-radius: 6px;
+  background: var(--branco);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cinza);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color .12s, color .12s, background .12s;
+}
+
+.botao-marcar-tudo:hover {
+  border-color: var(--vermelho);
+  color: var(--vermelho);
+  background: #FDF2F3;
+}
+
+.botao-marcar-tudo:active { transform: translateY(1px); }
+
 /* Botão de copiar o pedido pronto para o Claude. Fica fora do <label>,
    senão o clique nele marcaria a tarefa como feita sem ninguém ter feito. */
 .copiar-prompt {
