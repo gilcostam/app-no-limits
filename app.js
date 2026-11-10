@@ -231,9 +231,9 @@ function atualizarContagem(elementoId, mostrados) {
   const total = (clientes || []).length;
   if (total === 0) { alvo.textContent = ''; return; }
 
-  alvo.textContent = mostrados === total
-    ? `${total} ${total === 1 ? 'cliente' : 'clientes'}`
-    : `${mostrados} de ${total}`;
+  /* Sem filtro sai só o número: o título ao lado já diz "Clientes", e
+     "Clientes 30 clientes" repete a palavra. */
+  alvo.textContent = mostrados === total ? `${total}` : `${mostrados} de ${total}`;
 }
 
 let timerFalhaSync = null;
