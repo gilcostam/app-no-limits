@@ -146,6 +146,13 @@ const Checklist = {
   gravar(chave, dados) {
     this.cache[chave] = dados;
     localStorage.setItem(chave, JSON.stringify(dados));
+
+    /* Ponto único por onde passa toda marcação, nos quatro módulos.
+       Avisar o painel aqui evita ter que lembrar de chamá-lo em cada
+       função de marcar, e esquecer numa delas é como o número do
+       painel passaria a divergir do checklist. */
+    if (typeof atualizarPainel === 'function') atualizarPainel();
+
     if (!sb) return;
 
     sb.from('checklist_estado')
@@ -267,6 +274,9 @@ document.querySelectorAll('.aba').forEach(botao => {
     document.querySelectorAll('.painel').forEach(p => p.classList.remove('ativo'));
     botao.classList.add('ativa');
     $(`painel-${botao.dataset.aba}`).classList.add('ativo');
+    /* Volta para o painel depois de marcar tarefas numa rotina: é aqui
+       que ele recupera o que deixou de desenhar enquanto estava atrás. */
+    if (botao.dataset.aba === 'visao') atualizarPainel();
   });
 });
 
@@ -289,6 +299,20 @@ async function carregarDados() {
   if (typeof iniciarGmb === 'function') iniciarGmb();
   if (typeof iniciarDiretorios === 'function') iniciarDiretorios();
   if (typeof iniciarSite === 'function') iniciarSite();
+  if (typeof iniciarPainel === 'function') iniciarPainel();
+}
+
+/* O painel soma o progresso dos quatro módulos. Sem isto ele mostraria
+   o número de quando a aba foi aberta, e a pessoa marcaria dez tarefas
+   numa rotina para voltar ao painel e encontrar o total velho.
+
+   Só redesenha se a aba estiver na frente. Redesenhar escondido
+   custaria o relatório inteiro dos 30 clientes a cada caixa marcada,
+   para ninguém ver. Quando a aba volta, ela se redesenha. */
+function atualizarPainel() {
+  if (typeof renderizarPainel !== 'function') return;
+  if (!$('painel-visao')?.classList.contains('ativo')) return;
+  renderizarPainel();
 }
 
 function escapar(t) {

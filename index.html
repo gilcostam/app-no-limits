@@ -34,7 +34,8 @@
     <span>Marketing Estratégico</span>
   </div>
   <nav class="abas">
-    <button class="aba ativa" data-aba="workflow">Workflow</button>
+    <button class="aba ativa" data-aba="visao">Painel</button>
+    <button class="aba" data-aba="workflow">Workflow</button>
     <button class="aba" data-aba="gmb">Google Meu Negócio</button>
     <button class="aba" data-aba="dir">Diretórios locais</button>
     <button class="aba" data-aba="site">Site</button>
@@ -45,8 +46,28 @@
 
 <main>
 
+<!-- ============ PAINEL (VISÃO GERAL) ============ -->
+<section id="painel-visao" class="painel ativo">
+
+  <div class="painel-topo">
+    <div>
+      <h2>Painel do mês</h2>
+      <p class="painel-topo-nota">O que já foi feito e o que falta, por cliente.</p>
+    </div>
+    <div class="painel-navegacao">
+      <button id="painelMesAnterior" class="btn-semana" title="Mês anterior">‹</button>
+      <span id="painelMesLabel" class="painel-mes-label"></span>
+      <button id="painelMesProximo" class="btn-semana" title="Mês seguinte">›</button>
+      <button id="painelHoje" class="btn-hoje" title="Voltar para o mês atual">Hoje</button>
+    </div>
+  </div>
+
+  <div id="painelConteudo" class="painel-conteudo"></div>
+
+</section>
+
 <!-- ============ WORKFLOW CHECKLIST ============ -->
-<section id="painel-workflow" class="painel ativo">
+<section id="painel-workflow" class="painel">
 
   <div class="workflow-container">
     <!-- Lista de clientes -->
@@ -167,6 +188,7 @@
 <script src="gmb-rotina.js"></script>
 <script src="diretorios.js"></script>
 <script src="site-rotina.js"></script>
+<script src="painel.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
