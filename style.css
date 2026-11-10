@@ -176,6 +176,15 @@ body:not(.liberado) main { display: none; }
   flex: 1;
 }
 
+/* Número de clientes ao lado do título. Menor e cinza: é informação de
+   apoio, não deve competir com o nome da seção. */
+.contagem-clientes {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cinza);
+}
+
 .btn-sincronizar {
   background: none;
   border: 1px solid var(--cinza-claro);

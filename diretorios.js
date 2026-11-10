@@ -142,6 +142,7 @@ function renderizarListaClientesDir() {
 
   if (contratantes.length === 0) {
     lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente com diretórios locais contratados. Marque o serviço na aba Workflow.</div>';
+    atualizarContagem('contagemDir', 0);
     return;
   }
 
@@ -152,6 +153,8 @@ function renderizarListaClientesDir() {
     .filter(c => !termo
       || semAcentos(c.nome).includes(termo)
       || semAcentos(c.email).includes(termo));
+
+  atualizarContagem('contagemDir', filtrados.length);
 
   if (filtrados.length === 0) {
     lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente encontrado</div>';

@@ -215,6 +215,27 @@ function atualizarListasServicos() {
   if (typeof renderizarListaClientesSite === 'function') renderizarListaClientesSite();
 }
 
+/* ---------- contagem de clientes ----------
+
+   A lateral rola sem fim e ninguém sabe se são 30 ou 60 clientes, nem
+   quantos sobraram depois de filtrar. O número fica ao lado do título.
+
+   O denominador é sempre a base inteira, nas quatro abas. Na aba do
+   Google Meu Negócio, "40 de 66" responde de passagem quantos clientes
+   têm o serviço contratado, que é informação de venda. */
+
+function atualizarContagem(elementoId, mostrados) {
+  const alvo = document.getElementById(elementoId);
+  if (!alvo) return;
+
+  const total = (clientes || []).length;
+  if (total === 0) { alvo.textContent = ''; return; }
+
+  alvo.textContent = mostrados === total
+    ? `${total} ${total === 1 ? 'cliente' : 'clientes'}`
+    : `${mostrados} de ${total}`;
+}
+
 let timerFalhaSync = null;
 
 function avisarFalhaGravacao(mensagem) {

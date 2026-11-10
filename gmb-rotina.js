@@ -169,6 +169,7 @@ function renderizarListaClientesGmb() {
 
   if (contratantes.length === 0) {
     lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente com Google Meu Negócio contratado. Marque o serviço na aba Workflow.</div>';
+    atualizarContagem('contagemGmb', 0);
     return;
   }
 
@@ -179,6 +180,8 @@ function renderizarListaClientesGmb() {
     .filter(c => !termo
       || semAcentos(c.nome).includes(termo)
       || semAcentos(c.email).includes(termo));
+
+  atualizarContagem('contagemGmb', filtrados.length);
 
   if (filtrados.length === 0) {
     lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente encontrado</div>';

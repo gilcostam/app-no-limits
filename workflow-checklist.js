@@ -102,6 +102,7 @@ function renderizarListaClientes() {
 
   if (!clientes || clientes.length === 0) {
     lista.innerHTML = '<div class="cliente-item">Nenhum cliente cadastrado</div>';
+    atualizarContagem('contagemWorkflow', 0);
     return;
   }
 
@@ -127,6 +128,8 @@ function renderizarListaClientes() {
     .filter(f => !termo
       || semAcentos(f.cliente.nome).includes(termo)
       || semAcentos(f.cliente.email).includes(termo));
+
+  atualizarContagem('contagemWorkflow', visiveis.length);
 
   if (ordemWorkflow === 'parado') {
     /* Em andamento primeiro, do mais parado para o mais recente.

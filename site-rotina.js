@@ -230,6 +230,7 @@ function renderizarListaClientesSite() {
 
   if (contratantes.length === 0) {
     lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente com site contratado. Marque o serviço na aba Workflow.</div>';
+    atualizarContagem('contagemSite', 0);
     return;
   }
 
@@ -240,6 +241,8 @@ function renderizarListaClientesSite() {
     .filter(c => !termo
       || semAcentos(c.nome).includes(termo)
       || semAcentos(c.email).includes(termo));
+
+  atualizarContagem('contagemSite', filtrados.length);
 
   if (filtrados.length === 0) {
     lista.innerHTML = '<div class="cliente-item lista-vazia">Nenhum cliente encontrado</div>';
