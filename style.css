@@ -664,6 +664,37 @@ body:not(.liberado) main { display: none; }
 
 .copiar-prompt:active { transform: translateY(1px); }
 
+/* Link para o relatório no app de avaliações. Herda a caixa do
+   .copiar-prompt para não inventar um terceiro formato de botão, mas sai
+   em verde: o outro leva para a área de transferência e este leva para
+   fora do app, e isso precisa ficar visível antes do clique. */
+.relatorio-link {
+  text-decoration: none;
+  border-color: #1B7F3B;
+  color: #1B7F3B;
+}
+
+.relatorio-link:hover {
+  border-color: #1B7F3B;
+  color: var(--branco);
+  background: #1B7F3B;
+}
+
+/* O aviso não é um botão: quem olha precisa entender que não há nada
+   para clicar, e que falta cadastro. */
+.relatorio-sem-vinculo {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cinza);
+  white-space: nowrap;
+  border: 1px dashed var(--cinza-claro);
+  border-radius: 6px;
+  cursor: help;
+}
+
 /* ============ ROTINA GOOGLE MEU NEGÓCIO ============ */
 
 .gmb-cabecalho {

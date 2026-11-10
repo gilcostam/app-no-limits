@@ -48,7 +48,8 @@ Não altere nada no perfil por conta própria. Nome, endereço, telefone e categ
   { ciclo: 'mensal', id: 'horario_especial', label: 'Horários especiais e feriados',
     desc: 'Preencher antes do feriado. Horário errado gera avaliação ruim e some do mapa.' },
   { ciclo: 'mensal', id: 'desempenho', label: 'Números de desempenho',
-    desc: 'Anotar buscas, visualizações, ligações, pedidos de rota e cliques no site. É isso que vai no relatório.' },
+    desc: 'Buscas, visualizações, ligações, pedidos de rota e cliques no site já estão no app de avaliações, puxados da API do Google. Abrir, ler o mês e escrever a interpretação.',
+    relatorio: true },
   { ciclo: 'mensal', id: 'links_utm', label: 'Links de ação e rastreamento',
     desc: 'Conferir botão do site, WhatsApp, agendamento e pedido. Links com UTM para saber o que veio do Google.' },
   { ciclo: 'mensal', id: 'concorrentes', label: 'Olhar 2 ou 3 concorrentes',
@@ -304,6 +305,14 @@ function renderizarRotinaGmb() {
          o pedido não funciona: cada um pede de um jeito e a resposta do
          Claude vem diferente, aí não dá para comparar semana com semana. */
       if (acao.prompt) div.appendChild(botaoCopiarPrompt(acao.prompt));
+
+      /* Ação cujos números já existem no app de avaliações ganha o link
+         direto, no mês que está sendo olhado aqui. Sem isso a pessoa
+         abre o outro app, procura o cliente na lista de 30 e escolhe o
+         mês de novo, três passos para chegar onde o app já sabia. */
+      if (acao.relatorio && typeof linkRelatorioGmb === 'function') {
+        div.appendChild(linkRelatorioGmb(gmbCliente.id, gmbData));
+      }
 
       bloco.appendChild(div);
     });
