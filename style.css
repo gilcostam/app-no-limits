@@ -795,6 +795,117 @@ body:not(.liberado) main { display: none; }
 
 .gmb-contador.completo { background: #E3F3E8; color: #1B7F3B; }
 
+/* ---------- perfis em queda ---------- */
+
+/* Âmbar, e não o --vermelho da marca, de propósito. O vermelho daqui é
+   cor de identidade e de ação (aba ativa, botão, destaque), e num alerta
+   ele competiria com a marca em toda tela onde os dois aparecem juntos.
+   Âmbar diz "olhe isto" sem dizer "pare tudo", que é o tom certo: são
+   três clientes para diagnosticar no mês, não um incêndio.
+
+   As cores de texto são escuras sobre o creme de propósito. Esse erro já
+   aconteceu neste arquivo, com --cinza-claro em texto (está anotado na
+   regra .aba): cor de borda usada em texto sobre fundo claro fica
+   ilegível. */
+.queda-bloco {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: #FDF6E7;
+  border: 1px solid #F0DCA8;
+  border-radius: 8px;
+}
+
+.queda-titulo {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #8A5A00;
+}
+
+.queda-nota {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5C5346;
+}
+
+.queda-lista { display: flex; flex-direction: column; gap: 6px; }
+
+.queda-linha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: var(--branco);
+  border: 1px solid #F0DCA8;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* Só a linha com cliente vinculado vira clicável. Cursor de mão em linha
+   que não abre nada ensina a pessoa a não clicar em nenhuma. */
+.queda-linha-abre { cursor: pointer; }
+.queda-linha-abre:hover { background: #FFFBF2; border-color: #E0C47A; }
+
+.queda-nome {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Número em largura tabular e alinhado à direita: a lista é lida de cima
+   para baixo comparando grandeza, e dígito de largura variável faz 1.099
+   parecer menor que 412 em algumas fontes. */
+.queda-numeros,
+.queda-perda,
+.queda-pct {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.queda-numeros { color: var(--cinza); }
+.queda-perda { width: 104px; color: #8A5A00; }
+.queda-pct { width: 46px; font-weight: 700; color: var(--vermelho); }
+
+.queda-aviso {
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  background: var(--branco);
+  border: 1px solid var(--cinza-claro);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--cinza);
+}
+
+.queda-aviso-erro { background: #FDF6E7; border-color: #F0DCA8; color: #5C5346; }
+.queda-aviso-ok { background: #F3FAF5; border-color: #CBE6D4; color: #1B7F3B; }
+
+.queda-tentar {
+  margin-left: 8px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--preto);
+  background: var(--branco);
+  border: 1px solid var(--cinza-claro);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.queda-tentar:hover { border-color: var(--cinza); }
+
+@media (max-width: 760px) {
+  /* Em tela estreita os quatro campos não cabem na mesma linha, e o que
+     menos muda decisão é o par "antes → agora": a perda e a porcentagem
+     já dizem o tamanho do problema. */
+  .queda-numeros { display: none; }
+}
+
 /* ---------- fases do workflow ---------- */
 
 .fase-completa .gmb-bloco-cabecalho h3 { color: #1B7F3B; }

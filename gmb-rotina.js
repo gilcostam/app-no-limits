@@ -99,12 +99,10 @@ Não altere nada no perfil por conta própria. Nome, endereço, telefone e categ
   /* A rotina trata igual quem subiu 88% e quem caiu 60%, e queda forte não
      se resolve fazendo a mesma volta de tarefas com mais empenho: tem
      causa própria (suspensão parcial, categoria alterada, edição sugerida
-     aceita pelo Google, concorrente novo). A lista de quem caiu mora no app
-     de avaliações, que é onde os números estão, e se refaz todo dia. */
+     aceita pelo Google, concorrente novo). A lista fica no alto desta
+     mesma aba, buscada do app de avaliações, que é onde os números estão. */
   { ciclo: 'mensal', id: 'perfis_em_queda', label: 'Fora da rotina: perfis em queda',
-    desc: 'Abrir a lista de perfis que perderam visualização e conferir se este cliente está nela. Quem está precisa de diagnóstico individual no mês, não de mais uma volta do checklist.',
-    link: { url: 'https://nolimits-reviews.vercel.app/dashboard', texto: 'Ver perfis em queda',
-      titulo: 'Abre o painel do app de avaliações, que lista os perfis com queda de visualização contra dois meses atrás' } },
+    desc: 'Conferir a lista no alto desta aba. Quem está nela precisa de diagnóstico individual no mês, não de mais uma volta do checklist.' },
 
   /* ---------- todo trimestre ---------- */
   { ciclo: 'trimestral', id: 'nap', label: 'Conferência de NAP',
@@ -363,20 +361,6 @@ function renderizarRotinaGmb() {
         div.appendChild(linkRelatorioGmb(gmbCliente.id, gmbData));
       }
 
-      /* Link fixo, igual para todos os clientes. Separado do caso acima
-         porque aquele depende do vínculo do cliente com um perfil e pode
-         virar aviso de "não vinculado"; este é sempre a mesma página. */
-      if (acao.link) {
-        const a = document.createElement('a');
-        a.className = 'copiar-prompt relatorio-link';
-        a.href = acao.link.url;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        a.textContent = acao.link.texto;
-        a.title = acao.link.titulo || '';
-        div.appendChild(a);
-      }
-
       bloco.appendChild(div);
     });
 
@@ -436,6 +420,14 @@ function iniciarGmb() {
   ligarListaGmb();
   renderizarListaClientesGmb();
   renderizarRotinaGmb();
+
+  /* Busca os perfis em queda depois de desenhar a tela, não antes: é uma
+     chamada de rede a outro app e segurar a aba esperando por ela
+     atrasaria a rotina, que funciona sem isso. */
+  if (typeof Queda === 'object') {
+    Queda.ligar();
+    Queda.carregar();
+  }
 }
 
 console.log('✓ gmb-rotina.js carregado');
