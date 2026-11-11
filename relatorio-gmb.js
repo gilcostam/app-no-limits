@@ -62,19 +62,26 @@ const RELATORIO_PERFIS = {
   'cus_000165812036': 'cmrt7nerp000104jr3hsczkwq', /* Robisson Ferreira Sociedade Individual de Advocacia -> Macedo Ferreira (advmacedoferreira@gmail.com) */
   'cus_000149359269': 'cmql66kp3000104jry6l696az', /* ATFP ODONTOLOGIA INTEGRADA LTDA -> Start Clínica Odontológica (startclinicaodonto@gmail.com) */
 
-  /* Faltam três, sem e-mail que bata:
+  /* Este saiu pelo CNPJ, que é prova e não semelhança. O rodapé de
+     pharmoderm.com.br traz CNPJ 06.237.027/0001-89, o mesmo documento do
+     cadastro deste cliente no Asaas. "Costa Martins Manipulação de
+     Fórmulas Ltda" é a razão social e "Pharmoderm" é o nome da loja. */
+  'cus_000173595516': 'cmn99kn2y000104jjc4fxrukf', /* Costa Martins Manipulacao De Formulas Ltda -> Pharmoderm (CNPJ 06237027000189) */
 
-     'cus_000173595516': '', // Costa Martins Manipulacao De Formulas Ltda
-     'cus_000204435840': '', // Waldecir V Sachetin (sem e-mail no Asaas)
-     'cus_000148880427': '', // Lívia Paulinelli Guimarães Tamietto (liviapauli@gmail.com, não bate com nenhum perfil)
+  /* Faltam dois, e aqui o dado não decide:
 
-     Sobraram dois perfis no app de avaliações: Pharmoderm (farmácia de
-     manipulação, Ubá MG) e Start Neuroinclusiva. Dois perfis para três
-     clientes, então um destes três não tem perfil no Google.
+     'cus_000204435840': '', // Waldecir V Sachetin (sem e-mail nem endereço no Asaas)
+     'cus_000148880427': '', // Lívia Paulinelli Guimarães Tamietto (liviapauli@gmail.com, Campinas SP)
 
-     "Costa Martins Manipulação de Fórmulas" quase certamente é a
-     Pharmoderm, pelo ramo, mas ramo não é prova e link errado abre o
-     relatório de outro cliente. Fica em aberto até alguém confirmar.
+     Sobrou um perfil só no app de avaliações: "Start Neuroinlcusiva |
+     Capacitação para Neuroinclusão", cujo acesso é joana.costa.oliveira@
+     gmail.com, no nome de "Fernanda Prates - Joana Costa". Nem o nome nem
+     o e-mail batem com Waldecir ou com Lívia.
+
+     Um perfil para dois clientes, então um dos dois não tem perfil no
+     Google, e nada no cadastro diz qual. Chutar aqui abre o relatório de
+     outra pessoa para o cliente, então os dois ficam sem link até alguém
+     confirmar quem é a Start Neuroinclusiva.
 
      "No Limits Marketing Estratégico" também sobra no app de avaliações,
      mas esse é o perfil da própria agência e não tem cobrança no Asaas. */
