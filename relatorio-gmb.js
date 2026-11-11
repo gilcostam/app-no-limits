@@ -51,26 +51,33 @@ const RELATORIO_PERFIS = {
   'ivan-montenegro': 'cmuzs6n5g000106krf7s1dtna', /* Ivan Montenegro -> Dr. Ivan Montenegro - Ginecologista */
   'dentista-lidia-eugenio-figueiredo': 'cmsq36nvv000104lcqctjcuzk', /* Dentista Lidia Eugenio Figueiredo -> Dra. Lídia Eugênio Figueiredo */
 
-  /* Ainda sem vínculo. O nome do Asaas não deixa claro qual perfil é,
-     e chutar abriria o relatório de outro cliente:
+  /* Daqui para baixo o vínculo não veio do nome, veio do e-mail: o mesmo
+     endereço aparece no cadastro do Asaas e no acesso do cliente no app
+     de avaliações. Por nome nenhum destes casaria, e dois casariam
+     errado ("Robisson Ferreira" colaria em "Coutinho Advocacia"). */
+  'cus_000136478933': 'cmrw5xrp3000104jxhqhujbgw', /* Lilian Leles -> LLM Clean (leleslilian344@gmail.com) */
+  'cus_000207667937': 'cmw3kki5s000208jsdoc5bdv2', /* Clínica Face a Face -> Dr. Talvane Sobreira (talvane@talvanesobreira.com) */
+  'cus_000206413590': 'cmw5ba86j000108jkzen5v4jf', /* Maria Estephania Jogaib de Onofre -> Clínica dos Olhos Maricá (estephaniaonofre@gmail.com) */
+  'cus_000199661608': 'cmu2nrbpk000304kuj7lco52n', /* Larissa Camila dos Santos Gomes -> Clínica Odonto Premium (odontopremiumvalinhos@gmail.com) */
+  'cus_000165812036': 'cmrt7nerp000104jr3hsczkwq', /* Robisson Ferreira Sociedade Individual de Advocacia -> Macedo Ferreira (advmacedoferreira@gmail.com) */
+  'cus_000149359269': 'cmql66kp3000104jry6l696az', /* ATFP ODONTOLOGIA INTEGRADA LTDA -> Start Clínica Odontológica (startclinicaodonto@gmail.com) */
 
-     'cus_000136478933': '', // Lilian Leles
-     'cus_000207667937': '', // Clínica Face a Face
-     'cus_000206413590': '', // Maria Estephania Jogaib de Onofre
-     'cus_000204435840': '', // Waldecir V Sachetin
-     'cus_000199661608': '', // Larissa Camila dos Santos Gomes
+  /* Faltam três, sem e-mail que bata:
+
      'cus_000173595516': '', // Costa Martins Manipulacao De Formulas Ltda
-     'cus_000165812036': '', // Robisson Ferreira Sociedade Individual de Advocacia
-     'cus_000149359269': '', // ATFP ODONTOLOGIA INTEGRADA LTDA
-     'cus_000148880427': '', // Lívia Paulinelli Guimarães Tamietto
+     'cus_000204435840': '', // Waldecir V Sachetin (sem e-mail no Asaas)
+     'cus_000148880427': '', // Lívia Paulinelli Guimarães Tamietto (liviapauli@gmail.com, não bate com nenhum perfil)
 
-     Perfis do app de avaliações que sobraram para esses nove:
-     Clínica Odonto Premium, Clínica dos Olhos Maricá, Dr. Talvane
-     Sobreira, LLM Clean, Macedo Ferreira, Pharmoderm, Start Clínica
-     Odontológica, Start Neuroinclusiva. São oito perfis para nove
-     clientes, então um desses clientes não tem perfil no Google.
-     "No Limits Marketing Estratégico" também sobra, mas esse é o
-     perfil da própria agência e não tem cobrança no Asaas. */
+     Sobraram dois perfis no app de avaliações: Pharmoderm (farmácia de
+     manipulação, Ubá MG) e Start Neuroinclusiva. Dois perfis para três
+     clientes, então um destes três não tem perfil no Google.
+
+     "Costa Martins Manipulação de Fórmulas" quase certamente é a
+     Pharmoderm, pelo ramo, mas ramo não é prova e link errado abre o
+     relatório de outro cliente. Fica em aberto até alguém confirmar.
+
+     "No Limits Marketing Estratégico" também sobra no app de avaliações,
+     mas esse é o perfil da própria agência e não tem cobrança no Asaas. */
 };
 
 /* O relatório abre no mês fechado mais recente por conta própria, que é
