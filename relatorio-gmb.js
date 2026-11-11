@@ -68,23 +68,32 @@ const RELATORIO_PERFIS = {
      Fórmulas Ltda" é a razão social e "Pharmoderm" é o nome da loja. */
   'cus_000173595516': 'cmn99kn2y000104jjc4fxrukf', /* Costa Martins Manipulacao De Formulas Ltda -> Pharmoderm (CNPJ 06237027000189) */
 
-  /* Faltam dois, e aqui o dado não decide:
+  /* Sobram dois perfis no app de avaliações, e nenhum dos dois é de
+     cliente faturado:
 
-     'cus_000204435840': '', // Waldecir V Sachetin (sem e-mail nem endereço no Asaas)
-     'cus_000148880427': '', // Lívia Paulinelli Guimarães Tamietto (liviapauli@gmail.com, Campinas SP)
+     "No Limits Marketing Estratégico" é o perfil da própria agência, sem
+     cobrança no Asaas.
 
-     Sobrou um perfil só no app de avaliações: "Start Neuroinlcusiva |
-     Capacitação para Neuroinclusão", cujo acesso é joana.costa.oliveira@
-     gmail.com, no nome de "Fernanda Prates - Joana Costa". Nem o nome nem
-     o e-mail batem com Waldecir ou com Lívia.
+     "Start Neuroinlcusiva | Capacitação para Neuroinclusão" (acesso de
+     Joana Costa, cadastrado como "Fernanda Prates - Joana Costa") foi
+     conferido com a Gilmara em 11/11/2026: não é da Waldecir nem da
+     Lívia, os dois únicos clientes que estavam sem vínculo. */
+};
 
-     Um perfil para dois clientes, então um dos dois não tem perfil no
-     Google, e nada no cadastro diz qual. Chutar aqui abre o relatório de
-     outra pessoa para o cliente, então os dois ficam sem link até alguém
-     confirmar quem é a Start Neuroinclusiva.
+/* Cliente que não tem perfil no Google, conferido, não é cadastro
+   faltando.
 
-     "No Limits Marketing Estratégico" também sobra no app de avaliações,
-     mas esse é o perfil da própria agência e não tem cobrança no Asaas. */
+   A diferença importa na tela. Sem esta lista os dois apareciam como
+   "Perfil não vinculado", que é um pedido de providência, e alguém ia
+   procurar de novo, todo mês, um perfil que não existe. A pergunta já foi
+   feita e respondida uma vez; o lugar da resposta é aqui, não na memória
+   de quem perguntou.
+
+   Se algum deles criar perfil no Google um dia, é só tirar daqui e pôr o
+   par em RELATORIO_PERFIS. */
+const RELATORIO_SEM_PERFIL = {
+  'cus_000204435840': 'Waldecir V Sachetin',
+  'cus_000148880427': 'Lívia Paulinelli Guimarães Tamietto',
 };
 
 /* O relatório abre no mês fechado mais recente por conta própria, que é
@@ -106,10 +115,24 @@ function relatorioGmbUrl(clienteId, data) {
 }
 
 /* Cliente sem vínculo não ganha botão morto nem link para o relatório de
-   outra pessoa: ganha o aviso, porque o problema é de cadastro e quem
-   está olhando a tela é quem resolve. */
+   outra pessoa: ganha um aviso. E são dois avisos diferentes, porque são
+   dois problemas diferentes.
+
+   "Sem perfil no Google" é resposta: já foi conferido, não há relatório
+   para abrir e não há nada a fazer. "Perfil não vinculado" é pergunta:
+   falta ligar este cliente a um perfil, e quem está na tela resolve.
+
+   Juntar os dois no mesmo texto transformava fato em pendência eterna. */
 function linkRelatorioGmb(clienteId, data) {
   const url = relatorioGmbUrl(clienteId, data);
+
+  if (!url && RELATORIO_SEM_PERFIL[clienteId]) {
+    const nota = document.createElement('span');
+    nota.className = 'relatorio-sem-perfil';
+    nota.textContent = 'Sem perfil no Google';
+    nota.title = 'Conferido: este cliente não tem Perfil da Empresa no Google, então não há números de desempenho para puxar. Não é cadastro faltando.';
+    return nota;
+  }
 
   if (!url) {
     const aviso = document.createElement('span');

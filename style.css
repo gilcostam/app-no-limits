@@ -695,6 +695,23 @@ body:not(.liberado) main { display: none; }
   cursor: help;
 }
 
+/* Este não é aviso, é informação encerrada: o cliente não tem perfil no
+   Google e isso já foi conferido. Por isso sai sem moldura e mais apagado
+   que o "não vinculado" ao lado. Borda tracejada ali significa "falta
+   algo"; aqui não falta nada, e dar a mesma caixa aos dois faria a
+   resposta parecer pendência todo mês. */
+.relatorio-sem-perfil {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 6px 2px;
+  font-size: 12px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--cinza-claro);
+  white-space: nowrap;
+  cursor: help;
+}
+
 /* ============ ROTINA GOOGLE MEU NEGÓCIO ============ */
 
 .gmb-cabecalho {
