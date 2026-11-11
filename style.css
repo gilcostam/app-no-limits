@@ -696,18 +696,23 @@ body:not(.liberado) main { display: none; }
 }
 
 /* Este não é aviso, é informação encerrada: o cliente não tem perfil no
-   Google e isso já foi conferido. Por isso sai sem moldura e mais apagado
-   que o "não vinculado" ao lado. Borda tracejada ali significa "falta
-   algo"; aqui não falta nada, e dar a mesma caixa aos dois faria a
-   resposta parecer pendência todo mês. */
+   Google e isso já foi conferido. Borda tracejada no vizinho significa
+   "falta algo"; aqui não falta nada, e dar a mesma caixa aos dois faria a
+   resposta parecer pendência todo mês.
+
+   A diferença sai da forma, não da cor: sem moldura, em itálico e sem o
+   negrito do vizinho. Cor continua a mesma var(--cinza), porque o
+   --cinza-claro é cor de borda e em texto sobre branco fica em 1,2:1 de
+   contraste, ou seja, ilegível. Esse erro já aconteceu neste arquivo
+   antes, está anotado lá na regra .aba. */
 .relatorio-sem-perfil {
   flex-shrink: 0;
   align-self: center;
   padding: 6px 2px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   font-style: italic;
-  color: var(--cinza-claro);
+  color: var(--cinza);
   white-space: nowrap;
   cursor: help;
 }
