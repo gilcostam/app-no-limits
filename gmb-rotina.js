@@ -12,15 +12,60 @@ const GMB_ACOES = [
     desc: '3 a 5 fotos reais do cliente: ambiente, equipe, produto, bastidor. Nunca banco de imagens.' },
   { ciclo: 'semanal', id: 'avaliacoes', label: 'Resposta às avaliações novas',
     desc: 'Responder todas, positivas e negativas. Meta: em até 48h.' },
-  { ciclo: 'semanal', id: 'perguntas', label: 'Perguntas e respostas (Q&A)',
-    desc: 'Responder o que chegou e publicar as dúvidas que mais aparecem no WhatsApp.' },
-  { ciclo: 'semanal', id: 'mensagens', label: 'Mensagens do perfil',
-    desc: 'Limpar a caixa de mensagens. Demora em responder derruba a exibição.' },
   { ciclo: 'semanal', id: 'edicoes_sugeridas', label: 'Conferir edições sugeridas',
     desc: 'Usuários e o próprio Google alteram horário, telefone e endereço sem avisar. Reverter o que estiver errado.' },
   { ciclo: 'semanal', id: 'saude_perfil', label: 'Conferir saúde do perfil',
     desc: 'Ver se não há aviso de suspensão, pendência de verificação ou post reprovado.' },
-  { ciclo: 'semanal', id: 'claude_analise', label: 'Análise do perfil e da concorrência com o Claude',
+
+  /* Três tarefas saíram da lista semanal em 11/11/2026. O motivo fica
+     escrito aqui porque tarefa que desaparece sem explicação volta: alguém
+     nota a falta, acha que foi apagada por engano e recadastra.
+
+     'mensagens' ("limpar a caixa de mensagens") era impossível de cumprir.
+     O Google parou de abrir novas conversas no perfil em 15/07/2024 e
+     removeu mensagens, chat e histórico de chamadas em 31/07/2024. Os
+     dados confirmam sem margem: BUSINESS_CONVERSATIONS soma zero em 4.240
+     linhas de PerformanceMetric, nos 30 perfis, em todos os meses.
+
+     'perguntas' (Q&A) saiu pelo mesmo motivo, conferido pela Gilmara no
+     perfil real em 11/11/2026: o recurso não está mais disponível.
+
+     'claude_analise' não morreu, virou mensal dentro de 'concorrentes'.
+     Eram duas tarefas pedindo a mesma coisa (comparar com concorrente),
+     uma toda semana e outra todo mês. Semana é frequência maior que a
+     velocidade com que concorrente muda categoria, foto ou descrição.
+
+     A marcação antiga destes três ids continua gravada e não incomoda: o
+     contador conta só o que está em GMB_ACOES, então o progresso
+     recalcula sozinho (a semana era 8/8 e virou 5/5). */
+
+  /* ---------- todo mês ---------- */
+  { ciclo: 'mensal', id: 'categorias', label: 'Categoria principal e secundárias',
+    desc: 'A categoria principal é o que mais pesa no ranqueamento local. Revisar se ainda é a melhor.' },
+  { ciclo: 'mensal', id: 'produtos_servicos', label: 'Produtos e serviços',
+    desc: 'Cadastrar os novos e revisar descrição e preço dos antigos. Serviço sem descrição não aparece em busca.' },
+  { ciclo: 'mensal', id: 'descricao', label: 'Descrição do negócio',
+    desc: 'Revisar os 750 caracteres com os termos que o cliente quer aparecer e a cidade de atendimento.' },
+  { ciclo: 'mensal', id: 'atributos', label: 'Atributos do perfil',
+    desc: 'Formas de pagamento, acessibilidade, estacionamento, atendimento. Cada atributo é um filtro de busca.' },
+  { ciclo: 'mensal', id: 'horario_especial', label: 'Horários especiais e feriados',
+    desc: 'Preencher antes do feriado. Horário errado gera avaliação ruim e some do mapa.' },
+  { ciclo: 'mensal', id: 'desempenho', label: 'Números de desempenho',
+    desc: 'Visualizações por origem, ligações, pedidos de rota e cliques no site já estão no app de avaliações, puxados da API do Google. Abrir, ler o mês e escrever a interpretação. Se as visualizações caíram mais de 20% contra dois meses atrás, isto deixa de ser leitura e passa a ser diagnóstico: veja a tarefa de perfis em queda.',
+    relatorio: true },
+
+  /* Esta tarefa já pedia para conferir os botões, mas conferir que o botão
+     existe não é o mesmo que conferir que ele funciona, e a diferença
+     aparece no relatório. Almofadas Moretto Casa, em seis meses: 246
+     pedidos de rota e 1 ligação. Em outubro, 168 visualizações e 1 clique
+     no site. Perfil visto 168 vezes com 1 clique não tem problema de
+     ranqueamento, tem botão faltando ou levando a lugar nenhum. Nenhuma
+     outra tarefa da rotina pega isso, porque todas olham o perfil por
+     dentro, do lado de quem administra. */
+  { ciclo: 'mensal', id: 'links_utm', label: 'Botões de ação e rastreamento',
+    desc: 'Abrir o perfil como cliente e clicar em cada botão: site, WhatsApp, ligar, rota, agendamento, pedido. Confirmar que cada um abre o destino certo e que o link do site tem UTM. Comparar com os cliques do relatório: muita visualização com pouco clique é botão quebrado, não falta de alcance.' },
+
+  { ciclo: 'mensal', id: 'concorrentes', label: 'Análise do perfil e da concorrência com o Claude',
     desc: 'Abrir o perfil do cliente numa aba, chamar o Claude pela extensão do navegador e pedir a comparação com os concorrentes. O botão ao lado copia o pedido pronto.',
     prompt: `Analise o perfil do Google Meu Negócio de {cliente}, que está aberto nesta aba, e compare com os 3 primeiros concorrentes que aparecem na busca local da mesma categoria e cidade.
 
@@ -36,26 +81,30 @@ No fim, me entregue as 3 mudanças que mais mudam posição, em ordem de impacto
 
 Não altere nada no perfil por conta própria. Nome, endereço, telefone e categoria eu mesma altero, porque edição errada nesses campos derruba ou suspende o perfil.` },
 
-  /* ---------- todo mês ---------- */
-  { ciclo: 'mensal', id: 'categorias', label: 'Categoria principal e secundárias',
-    desc: 'A categoria principal é o que mais pesa no ranqueamento local. Revisar se ainda é a melhor.' },
-  { ciclo: 'mensal', id: 'produtos_servicos', label: 'Produtos e serviços',
-    desc: 'Cadastrar os novos e revisar descrição e preço dos antigos. Serviço sem descrição não aparece em busca.' },
-  { ciclo: 'mensal', id: 'descricao', label: 'Descrição do negócio',
-    desc: 'Revisar os 750 caracteres com os termos que o cliente quer aparecer e a cidade de atendimento.' },
-  { ciclo: 'mensal', id: 'atributos', label: 'Atributos do perfil',
-    desc: 'Formas de pagamento, acessibilidade, estacionamento, atendimento. Cada atributo é um filtro de busca.' },
-  { ciclo: 'mensal', id: 'horario_especial', label: 'Horários especiais e feriados',
-    desc: 'Preencher antes do feriado. Horário errado gera avaliação ruim e some do mapa.' },
-  { ciclo: 'mensal', id: 'desempenho', label: 'Números de desempenho',
-    desc: 'Buscas, visualizações, ligações, pedidos de rota e cliques no site já estão no app de avaliações, puxados da API do Google. Abrir, ler o mês e escrever a interpretação.',
-    relatorio: true },
-  { ciclo: 'mensal', id: 'links_utm', label: 'Links de ação e rastreamento',
-    desc: 'Conferir botão do site, WhatsApp, agendamento e pedido. Links com UTM para saber o que veio do Google.' },
-  { ciclo: 'mensal', id: 'concorrentes', label: 'Olhar 2 ou 3 concorrentes',
-    desc: 'Categorias que usam, frequência de post, nº de avaliações e nota. Serve para calibrar a rotina.' },
+  /* A justificativa antiga desta tarefa era ranqueamento ("volume constante
+     vale mais que pico"), e os dados dos 29 perfis com histórico completo
+     não sustentam isso. Correlação entre avaliações novas nos últimos três
+     meses e crescimento das visualizações: 0,009, que é ruído. Entre total
+     de avaliações e crescimento das visualizações: -0,169. Advogada Michele
+     tem 70 avaliações e caiu 5%; Lineu Biazotti tem 1.071 e caiu 16%; Dr.
+     Talvane tem 2 e subiu 42%.
+
+     A tarefa fica, a promessa muda. Avaliação decide quem já te achou, não
+     quem ainda vai te achar. Isso importa porque justificativa errada faz
+     a pessoa esperar subida de posição, não ver, e concluir que pedir
+     avaliação não serve para nada. Serve, só não para isso. */
   { ciclo: 'mensal', id: 'campanha_avaliacoes', label: 'Campanha de avaliações',
-    desc: 'Mandar o link curto de avaliação para os clientes atendidos no mês. Volume constante vale mais que pico.' },
+    desc: 'Mandar o link curto de avaliação para os clientes atendidos no mês. Isso move conversão e confiança (quem achou o perfil decide ligar), não posição na busca: nos nossos 30 perfis, volume de avaliação não tem relação com crescimento de visualizações.' },
+
+  /* A rotina trata igual quem subiu 88% e quem caiu 60%, e queda forte não
+     se resolve fazendo a mesma volta de tarefas com mais empenho: tem
+     causa própria (suspensão parcial, categoria alterada, edição sugerida
+     aceita pelo Google, concorrente novo). A lista de quem caiu mora no app
+     de avaliações, que é onde os números estão, e se refaz todo dia. */
+  { ciclo: 'mensal', id: 'perfis_em_queda', label: 'Fora da rotina: perfis em queda',
+    desc: 'Abrir a lista de perfis que perderam visualização e conferir se este cliente está nela. Quem está precisa de diagnóstico individual no mês, não de mais uma volta do checklist.',
+    link: { url: 'https://nolimits-reviews.vercel.app/dashboard', texto: 'Ver perfis em queda',
+      titulo: 'Abre o painel do app de avaliações, que lista os perfis com queda de visualização contra dois meses atrás' } },
 
   /* ---------- todo trimestre ---------- */
   { ciclo: 'trimestral', id: 'nap', label: 'Conferência de NAP',
@@ -312,6 +361,20 @@ function renderizarRotinaGmb() {
          mês de novo, três passos para chegar onde o app já sabia. */
       if (acao.relatorio && typeof linkRelatorioGmb === 'function') {
         div.appendChild(linkRelatorioGmb(gmbCliente.id, gmbData));
+      }
+
+      /* Link fixo, igual para todos os clientes. Separado do caso acima
+         porque aquele depende do vínculo do cliente com um perfil e pode
+         virar aviso de "não vinculado"; este é sempre a mesma página. */
+      if (acao.link) {
+        const a = document.createElement('a');
+        a.className = 'copiar-prompt relatorio-link';
+        a.href = acao.link.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = acao.link.texto;
+        a.title = acao.link.titulo || '';
+        div.appendChild(a);
       }
 
       bloco.appendChild(div);
