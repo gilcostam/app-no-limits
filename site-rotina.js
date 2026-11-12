@@ -292,6 +292,10 @@ function renderizarSite() {
 
   if (info) info.innerHTML = `<h2 class="cliente-info-nome">${escapar(siteCliente.nome)}</h2>`;
 
+  /* A verificação automática é buscada ao abrir o cliente, não ao abrir a
+     aba: buscar os 30 de uma vez faria 30 consultas para mostrar uma. */
+  if (typeof Auditoria === 'object') Auditoria.carregar(siteCliente.id);
+
   const estados = {
     fundacao: siteLer(siteCliente.id, 'fundacao'),
     mensal: siteLer(siteCliente.id, 'mensal'),
@@ -299,6 +303,10 @@ function renderizarSite() {
   };
 
   container.innerHTML = '';
+
+  if (typeof montarBarraAuditoria === 'function') {
+    container.appendChild(montarBarraAuditoria(siteCliente.id));
+  }
 
   const periodo = {
     fundacao: 'Uma vez só. Refazer apenas se o site for reconstruído.',
@@ -371,6 +379,14 @@ function montarItemSite(item, marcado, ciclo) {
     d.className = 'descricao';
     d.textContent = item.desc;
     label.appendChild(d);
+  }
+
+  /* O que o robô mediu, embaixo da descrição. Fica dentro do label de
+     propósito: clicar nele marca o item, que é o gesto natural de quem
+     acabou de ler a prova e concordou. O carimbo não marca nada sozinho. */
+  if (siteCliente && typeof montarVeredito === 'function') {
+    const v = montarVeredito(Auditoria.itemDe(siteCliente.id, item.id));
+    if (v) label.appendChild(v);
   }
 
   div.appendChild(input);
