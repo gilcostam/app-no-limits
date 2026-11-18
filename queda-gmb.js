@@ -37,6 +37,10 @@ const Queda = {
   /* 'nao_carregado' | 'carregando' | 'ok' | 'erro' */
   estado: 'nao_carregado',
   perfis: [],
+  /* perfilId -> { veredito, resumo, gravidade, passos: [{ acao, prova }] }.
+     Vem na mesma resposta da lista, e não numa segunda chamada, porque só
+     existe diagnóstico para quem está na lista. */
+  diagnosticos: {},
   erro: '',
 
   /* Uma busca por carregamento de página. O número vem da sincronização
@@ -73,6 +77,9 @@ const Queda = {
 
       const corpo = await resposta.json();
       this.perfis = Array.isArray(corpo.perfis) ? corpo.perfis : [];
+      /* Se a rota antiga ainda estiver no ar, o campo não vem. A lista
+         continua aparecendo sem o "o que fazer", em vez de quebrar. */
+      this.diagnosticos = (corpo.diagnosticos && typeof corpo.diagnosticos === 'object') ? corpo.diagnosticos : {};
       this.estado = 'ok';
     } catch (e) {
       this.estado = 'erro';
@@ -126,12 +133,32 @@ const Queda = {
          faz nada ensina a não clicar. */
       const classe = cliente ? 'queda-linha queda-linha-abre' : 'queda-linha';
       const attr = cliente ? ` data-cliente-id="${escapar(cliente.id)}"` : '';
+
+      /* O que fazer, vindo do diagnóstico que a rota calculou. Fica FORA
+         da linha clicável de propósito: quem está lendo o passo 2 não
+         quer que o clique troque a tela inteira de cliente. */
+      const d = this.diagnosticos[p.id];
+      const acoes = d ? `
+        <div class="queda-acoes queda-acoes-${escapar(d.gravidade)}">
+          <p class="queda-veredito">${escapar(d.resumo)}</p>
+          <ol class="queda-passos">
+            ${d.passos.map(s => `
+              <li>
+                ${escapar(s.acao)}
+                ${s.prova ? `<span class="queda-prova">${escapar(s.prova)}</span>` : ''}
+              </li>`).join('')}
+          </ol>
+        </div>` : '';
+
       return `
-        <div class="${classe}"${attr} title="${escapar(p.name)}">
-          <span class="queda-nome">${escapar(nome)}</span>
-          <span class="queda-numeros">${p.antes.toLocaleString('pt-BR')} → ${p.agora.toLocaleString('pt-BR')}</span>
-          <span class="queda-perda">−${p.perda.toLocaleString('pt-BR')}/mês</span>
-          <span class="queda-pct">${p.variacao}%</span>
+        <div class="queda-item">
+          <div class="${classe}"${attr} title="${escapar(p.name)}">
+            <span class="queda-nome">${escapar(nome)}</span>
+            <span class="queda-numeros">${p.antes.toLocaleString('pt-BR')} → ${p.agora.toLocaleString('pt-BR')}</span>
+            <span class="queda-perda">−${p.perda.toLocaleString('pt-BR')}/mês</span>
+            <span class="queda-pct">${p.variacao}%</span>
+          </div>
+          ${acoes}
         </div>`;
     }).join('');
 
@@ -141,9 +168,10 @@ const Queda = {
         <h3 class="queda-titulo">Fora da rotina: ${this.perfis.length} ${this.perfis.length === 1 ? 'perfil em queda' : 'perfis em queda'}</h3>
         <p class="queda-nota">
           Perderam mais de 20% das visualizações de ${escapar(mesAntes)} para ${escapar(mesAgora)}.
-          Queda assim tem causa própria (suspensão parcial, categoria alterada, edição aceita
-          pelo Google, concorrente novo) e pede diagnóstico individual, não mais uma volta
-          do checklist.
+          Cada um vem com o que fazer, na ordem, porque queda assim não se resolve repetindo
+          o checklist. Leia primeiro a linha em negrito: ela diz se o perfil perdeu CLIENTE
+          (o contato caiu junto) ou só VITRINE (apareceu menos e foi procurado igual). Só o
+          primeiro caso é urgente.
         </p>
         <div class="queda-lista">${linhas}</div>
       </div>`;

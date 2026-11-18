@@ -872,6 +872,62 @@ body:not(.liberado) main { display: none; }
 .queda-perda { width: 104px; color: #8A5A00; }
 .queda-pct { width: 46px; font-weight: 700; color: var(--vermelho); }
 
+/* ---------- o que fazer, por perfil ---------- */
+
+/* A linha e os passos são um bloco só: sem isto, o gap da .queda-lista
+   separa o passo 3 de um perfil do nome do perfil seguinte com a mesma
+   distância, e a lista passa a ser lida errada. */
+.queda-item { display: flex; flex-direction: column; }
+.queda-item .queda-linha { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+.queda-acoes {
+  padding: 8px 10px 9px;
+  background: var(--branco);
+  border: 1px solid #F0DCA8;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+}
+
+/* A faixa colorida à esquerda é o que diferencia os dois casos de longe.
+   Vermelho só para quem perdeu contato: se tudo fosse vermelho, a cor
+   deixaria de informar e a lista voltaria a ser quatro emergências. */
+.queda-acoes-grave { box-shadow: inset 3px 0 0 var(--vermelho); }
+.queda-acoes-atencao { box-shadow: inset 3px 0 0 #E0A82E; }
+
+.queda-veredito {
+  margin: 0 0 6px;
+  padding-left: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5C5346;
+}
+.queda-acoes-grave .queda-veredito { color: var(--vermelho); }
+
+.queda-passos {
+  margin: 0;
+  padding-left: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.queda-passos li {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5C5346;
+}
+
+/* A prova em linha própria, menor. Ela existe para a pessoa poder
+   discordar do passo: passo sem número atrás é palpite, e palpite numa
+   tela de diagnóstico acaba seguido sem conferir. */
+.queda-prova {
+  display: block;
+  margin-top: 1px;
+  font-size: 11px;
+  color: var(--cinza);
+  font-variant-numeric: tabular-nums;
+}
+
 .queda-aviso {
   margin-bottom: 20px;
   padding: 10px 14px;
