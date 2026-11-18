@@ -429,6 +429,8 @@ function iniciarGmb() {
     Queda.carregar();
     PostsAuditoria.ligar();
     PostsAuditoria.carregar();
+    PerfilFatores.ligar();
+    PerfilFatores.carregar();
   }
 }
 

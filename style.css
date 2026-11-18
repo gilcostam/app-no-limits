@@ -928,6 +928,40 @@ body:not(.liberado) main { display: none; }
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- fatores de ranqueamento ---------- */
+
+/* Cada cartao aqui e um FATOR, e a lista embaixo sao os clientes a quem
+   ele falta. Por isso a linha de cima nao tem contagem de posts nem
+   porcentagem: tem a frase do problema e quantos perfis. */
+.fator-lista { margin-top: 7px; }
+
+.fator-perfil { font-size: 11px; padding: 2px 7px; }
+/* A prova encolhe antes do nome quando falta espaco: o nome e por onde ela
+   acha o cliente, a prova e o detalhe. Sem o flex-shrink a prova herdava o
+   0 da regra de cima e cortava o nome ate sobrar "G...". */
+.fator-perfil .posts-limpo-quando {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fator-perfil .posts-limpo-nome { flex: 1 1 auto; }
+.fator-lista { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+.fator-perfil-abre { cursor: pointer; }
+.fator-perfil-abre:hover { background: #FFFBF2; border-color: #E0C47A; }
+
+/* A procedencia do numero, em letra menor. Fica na tela, e nao so no
+   codigo, porque "fator no 1 do mapa" sem dizer de quem e a medicao vira
+   lei natural na cabeca de quem le. */
+.fator-fonte {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--cinza);
+}
+
 /* ---------- posts com problema ---------- */
 
 /* Faixa de erro acima do resultado antigo. Fundo branco e nao vermelho
