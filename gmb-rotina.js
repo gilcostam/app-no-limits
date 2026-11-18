@@ -427,6 +427,8 @@ function iniciarGmb() {
   if (typeof Queda === 'object') {
     Queda.ligar();
     Queda.carregar();
+    PostsAuditoria.ligar();
+    PostsAuditoria.carregar();
   }
 }
 

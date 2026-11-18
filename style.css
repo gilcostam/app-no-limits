@@ -928,6 +928,51 @@ body:not(.liberado) main { display: none; }
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- posts com problema ---------- */
+
+.posts-achados {
+  margin: 0;
+  padding-left: 7px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.posts-achados li {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5C5346;
+}
+
+.posts-achados strong { color: var(--preto); }
+
+/* Data e trecho em linha própria. O trecho é o que permite discordar do
+   achado sem abrir o perfil, e por isso vem com aspas e em itálico: tem
+   que ficar claro que aquilo é o texto publicado, não o texto da tela. */
+.posts-data {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--cinza);
+  font-variant-numeric: tabular-nums;
+}
+
+.posts-acao { display: block; margin-top: 2px; }
+
+.posts-trecho {
+  display: block;
+  margin-top: 3px;
+  padding-left: 8px;
+  border-left: 2px solid #E8DCC0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--cinza);
+  /* Texto de post, não URL: quebra entre palavras. Herdar o break-all de
+     alguma regra vizinha picotaria palavra no meio. */
+  overflow-wrap: break-word;
+}
+
 .queda-aviso {
   margin-bottom: 20px;
   padding: 10px 14px;
