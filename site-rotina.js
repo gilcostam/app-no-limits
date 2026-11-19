@@ -22,6 +22,8 @@
 const SITE_BLOCOS = [
   { id: 'robos', ciclo: 'fundacao', titulo: 'O robô consegue ler?',
     nota: 'GPTBot, ClaudeBot e PerplexityBot fazem download simples da página e não executam JavaScript. Se o conteúdo só aparece depois do JS rodar, para eles a página está em branco.' },
+  { id: 'arquitetura', ciclo: 'fundacao', titulo: 'Quais páginas o site tem',
+    nota: 'Vem antes da fundação técnica porque é sobre quais páginas EXISTEM, não sobre como cada uma é feita. "Uma página dedicada para cada serviço" é o fator nº 1 do ranqueamento orgânico local e o nº 2 da citação por IA, medido pela Whitespark em 2026: nada dentro de uma página compensa a página não existir.' },
   { id: 'tecnica', ciclo: 'fundacao', titulo: 'Fundação técnica',
     nota: 'Configura uma vez. Refazer só se o site for reconstruído.' },
   { id: 'estrutura', ciclo: 'fundacao', titulo: 'Estrutura da página',
@@ -49,14 +51,35 @@ const SITE_ITENS = [
   { bloco: 'robos', id: 'robots_ia', label: 'robots.txt liberando os robôs de IA', critico: true,
     desc: 'Allow explícito para GPTBot, ClaudeBot, PerplexityBot, Google-Extended e Bingbot. Linha Sitemap com URL absoluta. Um deploy pode sobrescrever esse arquivo, por isso ele volta na lista mensal.' },
   { bloco: 'robos', id: 'sitemap', label: 'sitemap.xml com uma URL por rota e lastmod',
+    fator: 'o estudo classifica como mito de ranqueamento, mas serve para indexação',
     desc: 'lastmod com a data real da última alteração. Data falsa em lastmod queima a confiança no arquivo inteiro.' },
   { bloco: 'robos', id: 'gsc', label: 'Search Console verificado e sitemap enviado',
     desc: 'É a única fonte de verdade sobre o que o Google realmente indexou. Sem isso o trabalho é feito às cegas.' },
   { bloco: 'robos', id: 'sem_bloqueio', label: 'Nenhuma página útil bloqueada por noindex',
     desc: 'noindex esquecido do ambiente de teste é o erro mais comum depois de uma publicação.' },
 
+  /* ---------- quais páginas o site tem ----------
+     Este bloco inteiro não existia. São cinco dos vinte primeiros fatores
+     do orgânico local, e o primeiro de todos estava fora da lista. */
+  { bloco: 'arquitetura', id: 'pagina_por_servico', label: 'Uma página dedicada para cada serviço', critico: true,
+    fator: 'nº 1 do orgânico local · nº 2 da busca com IA · nº 24 do mapa',
+    desc: 'Uma página que fala de tudo não ganha de uma que fala só daquilo. Liste os serviços que o cliente realmente vende e confira se cada um tem endereço próprio: /clareamento-dental-uba, não uma seção dentro de /servicos. É o fator mais forte da lista inteira e o que mais demora, então começa por ele.' },
+  { bloco: 'arquitetura', id: 'conteudo_servico', label: 'Conteúdo de verdade em cada página de serviço',
+    fator: 'nº 17 do orgânico local · nº 14 da busca com IA',
+    desc: 'Pelo menos 400 palavras respondendo o que a pessoa quer saber antes de marcar: o que é, quando é indicado, como é feito, quanto tempo leva, o que esperar depois. É desse texto que a IA tira resposta para citar. Página de serviço com três parágrafos genéricos não é citada por ninguém.' },
+  { bloco: 'arquitetura', id: 'links_internos', label: 'Cada página alcançável por link de outra',
+    fator: 'nº 6 do orgânico local',
+    desc: 'Página que só existe no sitemap é página órfã. A de serviço tem que ser linkada da home e das irmãs, e tem que linkar de volta. É por aí que o Google entende que o site tem profundidade no assunto, e não uma página solta.' },
+  { bloco: 'arquitetura', id: 'ancora_descritiva', label: 'Texto do link interno diz para onde vai',
+    fator: 'nº 19 do orgânico local',
+    desc: '"Saiba mais" e "clique aqui" não carregam palavra-chave nenhuma. Troque por "clareamento dental em Ubá". O texto do link é o que diz ao buscador do que trata a página de destino.' },
+  { bloco: 'arquitetura', id: 'nicho', label: 'Site focado num assunto só',
+    fator: 'nº 9 do orgânico local · nº 9 da busca com IA',
+    desc: 'Site de dentista que também fala de estética, nutrição e coaching dilui os três. Se o cliente faz coisas distintas demais, decida qual o site defende e tire o resto, ou separe em domínios.' },
+
   /* ---------- fundação técnica ---------- */
   { bloco: 'tecnica', id: 'https', label: 'HTTPS forçado por redirect 301',
+    fator: 'nº 18 do orgânico local',
     desc: 'Uma única versão do endereço. Com e sem www, com e sem barra final, tudo convergindo para um só.' },
   { bloco: 'tecnica', id: 'canonical', label: 'Canonical absoluto e autorreferente em cada rota',
     desc: 'Cada página aponta para si mesma com URL completa. Canonical copiado da home em todas as rotas desindexa o site inteiro.' },
@@ -66,17 +89,24 @@ const SITE_ITENS = [
     desc: 'summary_large_image. Pouco tráfego, mas alguns agregadores leem essa tag em vez da Open Graph.' },
   { bloco: 'tecnica', id: 'lang', label: 'lang="pt-BR" no html',
     desc: 'Diz ao buscador e ao assistente em que idioma e país a página deve ser considerada.' },
+  { bloco: 'tecnica', id: 'celular', label: 'Site funcionando bem no celular',
+    fator: 'nº 16 do orgânico local · nº 4 em conversão',
+    desc: 'Meta viewport presente, texto legível sem dar zoom, botão de WhatsApp alcançável com o polegar. Não é a nota do PageSpeed, que é outra coisa: é a página caber e funcionar na tela pequena, que é onde a busca local acontece.' },
   { bloco: 'tecnica', id: 'cache', label: 'Cache separado: estático sim, HTML não',
     desc: 'Imagem, CSS e JS com cache longo. HTML sem cache, senão a correção de hoje aparece semana que vem.' },
-  { bloco: 'tecnica', id: 'nap_site', label: 'NAP no rodapé de todas as páginas',
-    desc: 'Nome, endereço e telefone escritos exatamente como estão no Google Meu Negócio. Caractere por caractere.' },
+  { bloco: 'tecnica', id: 'nap_site', label: 'NAP do site idêntico ao do perfil do Google',
+    fator: 'nº 15 do mapa · nº 10 entre os negativos (site sem NAP legível)',
+    desc: 'Nome, endereço e telefone em texto, nunca em imagem, no rodapé de todas as páginas. E iguais aos do perfil do Google caractere por caractere: "Av." e "Avenida" são endereços diferentes para o robô. Divergir é fator negativo e conta também em risco de suspensão.' },
 
   /* ---------- estrutura da página ---------- */
   { bloco: 'estrutura', id: 'title', label: 'Title com o essencial nos primeiros 60 caracteres',
+    fator: 'nº 17 do mapa · nº 4 do orgânico. O TAMANHO do title é mito: o que pesa é a palavra-chave estar nele',
     desc: 'Padrão: palavra-chave + cidade, diferencial, empresa. Pode passar de 60, mas o que importa precisa caber antes do corte.' },
   { bloco: 'estrutura', id: 'description', label: 'Description com o essencial nos primeiros 150 caracteres',
+    fator: 'palavra-chave na description é mito de ranqueamento; o que ela decide é o clique',
     desc: 'Palavra-chave, empresa, diferencial e chamada para ação. Mesma lógica do title: o corte existe, escreva para ele.' },
   { bloco: 'estrutura', id: 'h1', label: 'Um único H1, hierarquia sem pular nível',
+    fator: 'nº 20 do mapa · nº 8 do orgânico',
     desc: 'H1 depois H2 depois H3. Pular de H1 para H3 confunde quem lê a página por estrutura, e é assim que a IA lê.' },
   { bloco: 'estrutura', id: 'resposta_direta', label: 'Resposta direta nos primeiros 60 caracteres de cada seção',
     desc: 'O trecho citado pela IA quase sempre é a primeira frase do bloco. Afirme antes de contextualizar.' },
@@ -85,7 +115,11 @@ const SITE_ITENS = [
   { bloco: 'estrutura', id: 'fato_concreto', label: 'Um fato concreto a cada 150 a 200 palavras',
     desc: 'Número, prazo, material, procedimento. Texto só com adjetivo não é citado porque não afirma nada verificável.' },
   { bloco: 'estrutura', id: 'faq', label: 'FAQ com 5 a 10 perguntas reais',
+    fator: 'nº 10 da busca com IA (texto que se lê em diagonal)',
     desc: 'Perguntas que os clientes fazem de verdade, respostas de 2 a 4 linhas. Pergunta inventada enche a página e não traz busca.' },
+  { bloco: 'estrutura', id: 'cidade_conteudo', label: 'Cidade e bairro dentro do texto, não só no rodapé',
+    fator: 'nº 2 do orgânico local · nº 18 do mapa · nº 6 da busca com IA',
+    desc: 'A cidade tem que estar no title, no H1 e no corpo, escrita como o cliente escreveria. Endereço no rodapé não conta: aquilo é dado de contato, não é conteúdo sobre o lugar. Cite bairro, referências da cidade e de onde vêm os pacientes.' },
   { bloco: 'estrutura', id: 'alt', label: 'alt descritivo em todas as imagens',
     desc: 'Descreva o que está na imagem. Para o robô, imagem sem alt simplesmente não existe.' },
   { bloco: 'estrutura', id: 'sem_invencao', label: 'Nenhum dado inventado na página', critico: true,
@@ -109,9 +143,16 @@ const SITE_ITENS = [
   { bloco: 'autoridade', id: 'data_visivel', label: 'Data de atualização visível na página',
     desc: 'Visível para o leitor e também no dateModified do schema. As duas precisam bater.' },
   { bloco: 'autoridade', id: 'fontes', label: 'Fontes citadas com link',
+    fator: 'linkar para sites de autoridade é o nº 177 de 187; mantenha pela credibilidade com a IA, não pelo ranqueamento',
     desc: 'Órgão oficial, conselho de classe, estudo. Link para fonte externa confiável aumenta a chance de citação.' },
   { bloco: 'autoridade', id: 'contato_real', label: 'Contato, endereço e CNPJ acessíveis',
     desc: 'Empresa que não diz quem é não é tratada como fonte confiável.' },
+  { bloco: 'autoridade', id: 'listas_melhores', label: 'Presença nas listas de "melhores" da cidade', critico: true,
+    fator: 'nº 1 da busca com IA',
+    desc: 'É o fator nº 1 de citação por IA, à frente de TUDO que se faça no próprio site. Busque o termo principal do cliente e veja quais resultados da primeira página são lista ou diretório (Doctoralia, catálogos locais, "os 10 melhores de..."). Confira se o cliente está em cada um e cadastre onde não estiver. O plano por termo, na aba do cliente, já nomeia quais são.' },
+  { bloco: 'autoridade', id: 'citacao_imprensa', label: 'Citação em jornal, blog ou associação do setor',
+    fator: 'nº 3 e nº 4 da busca com IA',
+    desc: 'Menção em site de notícia, blog do setor, site de associação ou de prefeitura. Não precisa ser link: menção sem link ao nome da marca é o nº 12 da busca com IA. Três dos cinco primeiros fatores de citação por IA são desse tipo, nenhum deles mora no site do cliente.' },
 
   /* ---------- mensal ---------- */
   { bloco: 'mensal', id: 'gsc_queda', label: 'Search Console: páginas que perderam clique',
@@ -149,6 +190,7 @@ const SITE_ITENS = [
   { bloco: 'analise', id: 'concorrente', label: 'Quem passou na frente e por quê',
     desc: 'Abra as três primeiras posições. O que elas têm que o site do cliente não tem.' },
   { bloco: 'analise', id: 'backlinks', label: 'Backlinks ganhos e perdidos',
+    fator: 'nº 3 do orgânico local (qualidade dos links que apontam para o domínio)',
     desc: 'Link perdido explica queda sem causa aparente. Link novo mostra qual conteúdo está sendo encontrado.' },
   { bloco: 'analise', id: 'html_bot', label: 'Reler o HTML servido como um robô leria',
     desc: 'Repita a conferência do primeiro bloco. Troca de template ou de plugin volta a esconder o conteúdo sem avisar.' },
@@ -372,6 +414,18 @@ function montarItemSite(item, marcado, ciclo) {
     tag.className = 'item-critico';
     tag.textContent = 'crítico';
     label.appendChild(tag);
+  }
+
+  /* A posição do fator, antes da descrição. Fica aqui porque é o que
+     decide a ORDEM do trabalho: com 61 itens, "o nº 1 do orgânico local"
+     e "o estudo classifica como mito" são a diferença entre começar pelo
+     que move e começar pelo que está mais à mão. Vem do estudo da
+     Whitespark 2026, não de opinião nossa. */
+  if (item.fator) {
+    const f = document.createElement('div');
+    f.className = 'item-fator';
+    f.textContent = item.fator;
+    label.appendChild(f);
   }
 
   if (item.desc) {

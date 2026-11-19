@@ -928,6 +928,18 @@ body:not(.liberado) main { display: none; }
   font-variant-numeric: tabular-nums;
 }
 
+/* Posicao do fator ao lado do item da aba Site. Cor sobria de proposito:
+   ela informa a ordem do trabalho, nao e alerta. Quando o texto diz
+   "mito", a mesma cor serve: o item continua valendo pelo que ele faz,
+   so nao vale pelo ranqueamento. */
+.item-fator {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #8A5A00;
+}
+
 /* ---------- fatores de ranqueamento ---------- */
 
 /* Cada cartao aqui e um FATOR, e a lista embaixo sao os clientes a quem
