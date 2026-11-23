@@ -198,10 +198,55 @@
 
 </section>
 
+<!-- Escolher o que importar do Asaas. Nada é gravado antes de confirmar aqui:
+     a tabela `clientes` guarda CPF, endereço e telefone de gente real. -->
+<div id="impOverlay" class="imp-overlay oculto">
+  <div class="imp-caixa" role="dialog" aria-modal="true" aria-labelledby="impTitulo">
+
+    <div class="imp-topo">
+      <h3 id="impTitulo">Importar clientes do Asaas</h3>
+      <button type="button" id="impFechar" class="imp-fechar" aria-label="Fechar">×</button>
+    </div>
+
+    <div id="impAvisos"></div>
+
+    <div class="imp-filtros">
+      <label class="imp-filtro">
+        <span>Mês de cadastro no Asaas</span>
+        <select id="impMes"></select>
+      </label>
+      <label class="imp-filtro">
+        <span>Situação</span>
+        <select id="impStatus">
+          <option value="ativos">Só assinatura ativa</option>
+          <option value="inativos">Só encerradas</option>
+          <option value="todos">Todos</option>
+        </select>
+      </label>
+      <div class="imp-marcar">
+        <button type="button" id="impMarcarTodos" class="imp-link">Marcar os da tela</button>
+        <button type="button" id="impDesmarcarTodos" class="imp-link">Desmarcar</button>
+      </div>
+    </div>
+
+    <div id="impCorpo" class="imp-corpo"></div>
+
+    <div class="imp-rodape">
+      <span id="impContagem" class="imp-contagem"></span>
+      <div class="imp-botoes">
+        <button type="button" id="impCancelar" class="imp-btn-secundario">Cancelar</button>
+        <button type="button" id="impConfirmar" class="imp-btn-principal">Importar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="asaas-proxy.js"></script>
+<script src="asaas-importar.js"></script>
 <script src="workflow-checklist.js"></script>
 <script src="relatorio-gmb.js"></script>
 <script src="gmb-rotina.js"></script>

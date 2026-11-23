@@ -37,6 +37,8 @@ function responder(corpo: unknown, status = 200): Response {
 
 interface ClienteAsaas {
   id: string;
+  dateCreated?: string;
+  deleted?: boolean;
   name?: string;
   email?: string;
   phone?: string;
@@ -66,6 +68,68 @@ function converter(c: ClienteAsaas) {
     uf: c.state || '',
     cep: c.postalCode || '',
   };
+}
+
+/* ---------------------------------------------------------------------------
+   Quem ainda é cliente.
+
+   O objeto cliente do Asaas NÃO tem campo de ativo ou inativo: tem só
+   `deleted`, e cliente que parou de pagar não é deletado, continua na
+   lista para sempre. Era por isso que a sincronização trazia de volta
+   gente que saiu há tempos.
+
+   O que diz se alguém ainda é cliente é a ASSINATURA, cujo `status` é
+   ACTIVE, EXPIRED ou INACTIVE. Ler uma por cliente seriam dezenas de
+   requisições, então aqui lê a lista inteira de assinaturas paginada e
+   agrupa por cliente: duas ou três chamadas para a carteira toda.
+
+   Um cliente pode ter mais de uma assinatura (trocou de plano, ou tem
+   site e tráfego separados). Vale a melhor: basta uma ACTIVE para ele
+   contar como ativo.
+   --------------------------------------------------------------------------- */
+
+interface AssinaturaAsaas {
+  customer?: string;
+  status?: string;
+  deleted?: boolean;
+}
+
+const ORDEM_STATUS: Record<string, number> = { INACTIVE: 1, EXPIRED: 2, ACTIVE: 3 };
+
+async function lerAssinaturas(chave: string): Promise<Record<string, string> | null> {
+  const porCliente: Record<string, string> = {};
+  let offset = 0;
+
+  try {
+    for (let pagina = 0; pagina < MAX_PAGINAS; pagina++) {
+      const resposta = await fetch(
+        `${ASAAS_BASE}/subscriptions?limit=${LIMITE_PAGINA}&offset=${offset}`,
+        { headers: { access_token: chave, 'Content-Type': 'application/json' } },
+      );
+
+      /* Falha aqui NÃO derruba a sincronização: sem assinatura a tela
+         ainda consegue filtrar por mês de cadastro, e é melhor entregar
+         meia informação com o aviso do que não entregar nada. */
+      if (!resposta.ok) return null;
+
+      const dados = await resposta.json();
+      for (const a of (dados.data ?? []) as AssinaturaAsaas[]) {
+        if (!a.customer || a.deleted) continue;
+        const novo = a.status ?? 'INACTIVE';
+        const atual = porCliente[a.customer];
+        if (!atual || (ORDEM_STATUS[novo] ?? 0) > (ORDEM_STATUS[atual] ?? 0)) {
+          porCliente[a.customer] = novo;
+        }
+      }
+
+      if (!dados.hasMore) break;
+      offset += LIMITE_PAGINA;
+    }
+  } catch {
+    return null;
+  }
+
+  return porCliente;
 }
 
 Deno.serve(async (req: Request) => {
@@ -129,10 +193,26 @@ Deno.serve(async (req: Request) => {
     if (pagina === MAX_PAGINAS - 1) truncou = true;
   }
 
+  const assinaturas = await lerAssinaturas(chaveAsaas);
+
+  /* `clientes` continua com exatamente as colunas da tabela, para o
+     upsert não quebrar com coluna desconhecida. Tudo que serve só para
+     a tela de escolha vai em `extras`, separado de propósito. */
+  const extras: Record<string, { cadastro: string; removido: boolean; assinatura: string | null }> = {};
+  for (const c of brutos) {
+    extras[c.id] = {
+      cadastro: c.dateCreated ?? '',
+      removido: Boolean(c.deleted),
+      assinatura: assinaturas ? (assinaturas[c.id] ?? null) : null,
+    };
+  }
+
   return responder({
     sucesso: true,
     total: brutos.length,
     truncou,
     clientes: brutos.map(converter),
+    extras,
+    assinaturasLidas: assinaturas !== null,
   });
 });

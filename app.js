@@ -321,35 +321,11 @@ function escapar(t) {
   return d.innerHTML;
 }
 
-/* ---------- sincronização Asaas ---------- */
+/* ---------- sincronização Asaas ----------
 
-async function sincronizarAsaas() {
-  const btn = $('btnSincronizar');
-  const aviso = $('aviso-sincronizar');
-
-  btn.classList.add('sincronizando');
-  aviso.textContent = 'Sincronizando...';
-  aviso.className = 'aviso-sync';
-
-  try {
-    const resultado = await Asaas.sincronizar();
-
-    if (resultado.sucesso) {
-      await carregarDados();
-      aviso.textContent = `✓ ${resultado.total} cliente(s) sincronizado(s)`;
-      aviso.className = 'aviso-sync ok';
-      setTimeout(() => { aviso.textContent = ''; }, 3000);
-    } else {
-      aviso.textContent = `✗ Erro: ${resultado.erro}`;
-      aviso.className = 'aviso-sync erro';
-    }
-  } catch (e) {
-    aviso.textContent = `✗ Erro: ${e.message}`;
-    aviso.className = 'aviso-sync erro';
-  } finally {
-    btn.classList.remove('sincronizando');
-  }
-}
+   O ⟳ agora ABRE a tela de escolha em vez de gravar direto. O Asaas
+   nunca apaga cliente, então buscar e gravar tudo ressuscitava ex-cliente
+   a cada sincronização. Ver asaas-importar.js. */
 
 /* ---------- acesso ---------- */
 
@@ -430,7 +406,7 @@ $('btnSair').addEventListener('click', async () => {
   location.reload();
 });
 
-$('btnSincronizar')?.addEventListener('click', sincronizarAsaas);
+$('btnSincronizar')?.addEventListener('click', () => Importacao.abrir());
 
 /* ---------- início ---------- */
 
