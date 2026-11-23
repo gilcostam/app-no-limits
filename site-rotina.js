@@ -167,8 +167,18 @@ const SITE_ITENS = [
     desc: 'Inclusive link interno antigo apontando para página que foi renomeada.' },
   { bloco: 'mensal', id: 'formulario', label: 'Formulário e WhatsApp testados de verdade',
     desc: 'Envie uma mensagem e confirme que ela chegou. Formulário mudo é prejuízo direto, não questão de SEO.' },
-  { bloco: 'mensal', id: 'conteudo_novo', label: 'Conteúdo novo ou atualização publicada no mês',
-    desc: 'Pode ser uma FAQ nova ou a revisão de um texto existente, com dateModified real.' },
+  /* Era "Conteúdo novo ou atualização publicada no mês", sem lugar definido
+     para fazer. Virou o artigo do mês quando a fila de artigos passou a
+     existir no app de avaliações, em 23/11/2026. Não foi criada uma tarefa
+     nova ao lado: duas tarefas pedindo a mesma coisa é o erro que a rotina
+     do GMB já cometeu uma vez com 'claude_analise' e 'concorrentes'.
+
+     A alternativa antiga continua valendo e está escrita na descrição: num
+     mês em que revisar um texto existente rende mais do que publicar um
+     artigo novo, a tarefa se cumpre assim. */
+  { bloco: 'mensal', id: 'conteudo_novo', label: 'Artigo do mês escrito, revisado e aprovado',
+    desc: 'Escrever, ler e aprovar no app de avaliações. Nenhum artigo vai ao ar sem alguém ler: texto de máquina publicado sem revisão é o que a política de spam do Google chama de conteúdo em escala, e a penalidade cai no site do cliente. Num mês em que revisar um texto existente rende mais, vale como alternativa, com dateModified real.',
+    artigos: true },
   { bloco: 'mensal', id: 'busca_marca', label: 'Buscar o nome da empresa no Google',
     desc: 'Veja o que aparece junto: perfil antigo, concorrente, reclamação. A primeira página do nome é a vitrine.' },
 
@@ -443,8 +453,18 @@ function montarItemSite(item, marcado, ciclo) {
     if (v) label.appendChild(v);
   }
 
+
   div.appendChild(input);
   div.appendChild(label);
+
+  /* O botão fica FORA do label, ao contrário do veredito, e depois dele.
+     Dentro do label, clicar para abrir os artigos marcaria a tarefa como
+     feita no mesmo gesto, e a tarefa só está feita depois de o artigo ser
+     aprovado, não quando a tela abre. */
+  if (item.artigos && siteCliente && typeof linkArtigosSite === 'function') {
+    div.appendChild(linkArtigosSite(siteCliente.id));
+  }
+
   return div;
 }
 

@@ -61,6 +61,7 @@ const RELATORIO_PERFIS = {
   'cus_000199661608': 'cmu2nrbpk000304kuj7lco52n', /* Larissa Camila dos Santos Gomes -> Clínica Odonto Premium (odontopremiumvalinhos@gmail.com) */
   'cus_000165812036': 'cmrt7nerp000104jr3hsczkwq', /* Robisson Ferreira Sociedade Individual de Advocacia -> Macedo Ferreira (advmacedoferreira@gmail.com) */
   'cus_000149359269': 'cmql66kp3000104jry6l696az', /* ATFP ODONTOLOGIA INTEGRADA LTDA -> Start Clínica Odontológica (startclinicaodonto@gmail.com) */
+  'cus_000148880427': 'cmwdk2lrz000208jtiyvy6vvx', /* Lívia Paulinelli Guimarães Tamietto -> Pediatra | Sono Infantil Dra Lívia Paulinelli (conferido em 23/11/2026) */
 
   /* Este saiu pelo CNPJ, que é prova e não semelhança. O rodapé de
      pharmoderm.com.br traz CNPJ 06.237.027/0001-89, o mesmo documento do
@@ -93,7 +94,13 @@ const RELATORIO_PERFIS = {
    par em RELATORIO_PERFIS. */
 const RELATORIO_SEM_PERFIL = {
   'cus_000204435840': 'Waldecir V Sachetin',
-  'cus_000148880427': 'Lívia Paulinelli Guimarães Tamietto',
+
+  /* Lívia Paulinelli saiu daqui em 23/11/2026. A anotação acima foi escrita
+     em 11/11 e o perfil dela foi criado no app de avaliações em 12/11, um
+     dia depois: googleConnected, 18 avaliações, site draliviapaulinelli.com.br.
+     Durante onze dias o botão dela ficou apagado dizendo que não havia o que
+     abrir, enquanto havia. É o risco de toda lista escrita à mão, e a razão
+     de este comentário existir: na dúvida, conferir no app antes de confiar. */
 };
 
 /* O relatório abre no mês fechado mais recente por conta própria, que é
@@ -149,5 +156,39 @@ function linkRelatorioGmb(clienteId, data) {
   link.rel = 'noopener noreferrer';
   link.textContent = 'Abrir relatório';
   link.title = 'Abre o relatório mensal no app de avaliações, com os números já puxados da API do Google';
+  return link;
+}
+
+/* ---------------------------------------------------------------------------
+   Artigos do blog
+
+   Mesma ponte, outra tela. O artigo do mês é escrito, revisado e aprovado no
+   app de avaliações, em /artigos, e a rotina do site aqui é só onde a tarefa
+   aparece e é marcada.
+
+   O aviso de quem não tem vínculo é diferente do aviso do relatório, de
+   propósito: para relatório o que falta pode ser perfil no Google, e para
+   artigo o que falta é o cadastro do cliente no app de avaliações. Repetir
+   "sem perfil no Google" aqui mandaria procurar a coisa errada.
+   --------------------------------------------------------------------------- */
+
+function linkArtigosSite(clienteId) {
+  const perfil = RELATORIO_PERFIS[clienteId];
+
+  if (!perfil) {
+    const aviso = document.createElement('span');
+    aviso.className = 'relatorio-sem-vinculo';
+    aviso.textContent = 'Cliente não vinculado';
+    aviso.title = 'Este cliente ainda não foi ligado a um cadastro no app de avaliações, que é onde os artigos são escritos e aprovados. Veja a lista em relatorio-gmb.js.';
+    return aviso;
+  }
+
+  const link = document.createElement('a');
+  link.className = 'copiar-prompt relatorio-link';
+  link.href = `${RELATORIO_BASE}/${perfil}/artigos`;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = 'Abrir artigos';
+  link.title = 'Abre a fila de artigos no app de avaliações: escrever, revisar e aprovar antes de publicar';
   return link;
 }
